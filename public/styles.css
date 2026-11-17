@@ -75,7 +75,8 @@ footer.site { border-top: 1px solid var(--border); padding: 22px 46px 80px; colo
 .panel[data-color] > h2 { color: var(--c); }  /* the pattern's colour names it; no coloured bars */
 .panel > .desc { color: var(--muted); margin: 0 0 10px; }
 .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; }
-.bar label { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; color: var(--muted); }
+.bar label { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; font-size: .9rem; color: var(--muted); }
+.bar input[type="range"] { flex: 1 1 110px; min-width: 0; }
 .status { font-size: .85rem; color: var(--muted); }
 .status.ok { color: var(--green); } .status.err { color: var(--fail); } .status.wait { color: var(--wait); }
 .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 14px; }
