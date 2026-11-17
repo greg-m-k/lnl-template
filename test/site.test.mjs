@@ -25,17 +25,20 @@ test("catalogue: every lesson has a page that draws the site frame, and every to
   }
 });
 
+// The scaffold tests use a fixed catalogue, so they hold whatever topics the repository grows.
+const sample = { title: "t", topics: [{ slug: "requests", lessons: [{ path: "/requests/start/" }, { path: "/requests/race/" }] }] };
+
 test("scaffold: a lesson in a new topic adds the topic with Start here first", () => {
-  const after = addLesson(catalogue, { topic: "caching", lesson: "stale", title: "When the cache is stale" });
+  const after = addLesson(sample, { topic: "caching", lesson: "stale", title: "When the cache is stale" });
   const topic = after.topics.at(-1);
   assert.equal(topic.slug, "caching");
   assert.deepEqual(topic.lessons.map((l) => l.path), ["/caching/start/", "/caching/stale/"]);
-  assert.equal(catalogue.topics.length + 1, after.topics.length, "the input is not changed");
+  assert.equal(sample.topics.length + 1, after.topics.length, "the input is not changed");
 });
 
 test("scaffold: refuses a duplicate lesson and a bad slug", () => {
-  assert.throws(() => addLesson(catalogue, { topic: "requests", lesson: "race", title: "x" }), /already exists/);
-  assert.throws(() => addLesson(catalogue, { topic: "Requests!", lesson: "x", title: "x" }), /slugs/);
+  assert.throws(() => addLesson(sample, { topic: "requests", lesson: "race", title: "x" }), /already exists/);
+  assert.throws(() => addLesson(sample, { topic: "Requests!", lesson: "x", title: "x" }), /slugs/);
 });
 
 test("requests api: parses and clamps the query at the boundary", () => {
