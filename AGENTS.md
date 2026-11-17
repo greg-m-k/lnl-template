@@ -20,6 +20,12 @@ coding agents and for the senior engineers who direct them.
 - **The code is the content.** Each pattern lives in its own standalone file, readable top to bottom, and the
   lesson shows that exact file (`showSource`). Duplicated plumbing between patterns is fine and expected.
   Never extract the pattern under comparison into a shared helper.
+- **Runs locally from a fresh clone. Always.** Anyone who downloads the repository must be able to run every topic on
+  their own laptop with `npm install` and `npm run dev`: no Cloudflare account, login, API token or remote resource.
+  Use only what `wrangler dev` runs locally (Workers, static assets, D1, Queues, Durable Objects, service bindings).
+  Never add something that only works deployed (Workers AI, Vectorize, Browser Rendering and the like) unless the topic
+  also has a local path. Deploying is also required, but only so the topic has a live page on the LnL site; it is never
+  the only way to run it.
 - **Written for a senior engineer from another field.** Define every term the first time it appears, even ones
   that feel basic inside the domain ("domain", "projection", "idempotent", "waterfall"). Say what each pattern
   gets you and what it costs, in that order, for every pattern.

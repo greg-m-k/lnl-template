@@ -16,7 +16,9 @@ It comes with:
 - Subagents in `.claude/agents/`: `topic-designer`, `pattern-builder`, `lesson-reviewer`, `session-facilitator`.
 - A scaffold: `npm run new-lesson -- <topic> <lesson> "Title"`.
 
-## Start
+## Run it on your laptop
+
+Every topic runs locally from a fresh clone. You need Node 22 or newer, and nothing else: no Cloudflare account.
 
 ```
 npm install
@@ -24,6 +26,8 @@ npm test
 npm run dev          # http://localhost:8800
 npm run ui           # in a second terminal: walks every page in Edge (CHANNEL=chrome for Chrome)
 ```
+
+Deploying (below) gives a topic its live page on your Lunch & Learn site. It is never required to run one.
 
 ## Put it on Cloudflare
 
