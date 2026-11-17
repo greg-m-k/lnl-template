@@ -80,6 +80,8 @@ Plain declarative sentences that say what happens. Write for a senior engineer r
 - No filler intensifiers (really, truly, simply, just) and no rhetorical questions in prose. A question to the room
   belongs in a control panel's "try this" line.
 - One idea per sentence where you can. Define a term the first time, then use it the same way every time.
+- The home page credits where the format comes from: `origin` in `public/topics.json` links lnl.sam-peterson.com,
+  the original site of this kind. Keep it.
 - The footer credits the author (`author` in `public/topics.json`). Notes about what a visitor does, such as how long
   data they create is kept or when switches turn off, go on the lesson page next to the control that does it.
 

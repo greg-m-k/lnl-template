@@ -11,7 +11,8 @@ const slash = (p) => (p.endsWith("/") ? p : `${p}/`);
 export async function home(main) {
   const site = await catalogue();
   main.replaceChildren(
-    el("header", {}, el("h1", {}, site.title), el("p", { class: "lead" }, site.intro)),
+    el("header", {}, el("h1", {}, site.title), el("p", { class: "lead" }, site.intro),
+      el("p", { class: "lead" }, site.origin.text, " ", el("a", { href: site.origin.url }, new URL(site.origin.url).host), ".")),
     ...site.topics.map((t) => el("section", { class: "topic", "aria-labelledby": `topic-${t.slug}` },
       el("h2", { id: `topic-${t.slug}` }, el("span", { "aria-hidden": "true" }, t.emoji), ` ${t.title}`),
       el("p", {}, t.summary, " ", source(site, t)),

@@ -25,6 +25,7 @@ test("home: one card per lesson, grouped by topic", async () => {
   await page.waitForSelector(".card");
   assert.equal(await page.locator(".topic").count(), catalogue.topics.length);
   assert.equal(await page.locator(".card").count(), lessons.length);
+  assert.equal(await page.locator(`header a[href="${catalogue.origin.url}"]`).count(), 1, "credits where the format comes from");
 });
 
 test("every lesson: chips for its topic with itself marked current", async () => {

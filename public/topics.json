@@ -2,7 +2,10 @@
   "title": "Lunch & Learn",
   "repo": "",
   "intro": "A Lunch & Learn is a format, and this page is an invitation to copy it. Take one design question your team keeps arguing about, build every competing answer for real, and run them side by side. Nothing here is mocked: every request you see really happens and every number is measured while you watch. Learn by doing: run it, slow something down, switch something off, and see for yourself what each pattern costs.",
-  "author": { "name": "Your Name", "url": "https://example.com" },
+  "author": {
+    "name": "Your Name",
+    "url": "https://example.com"
+  },
   "topics": [
     {
       "slug": "requests",
@@ -11,11 +14,23 @@
       "summary": "A page needs three independent answers from the server. Ask for them one after another, or all at once? Both run here against a real Worker, with the time each one takes measured as it happens.",
       "source": "topics/requests",
       "lessons": [
-        { "path": "/requests/start/", "title": "Start here: the problem and the two patterns", "chip": "Start here",
-          "blurb": "What a request waterfall is, what Promise.all does, and the words used in the lessons." },
-        { "path": "/requests/race/", "title": "Three calls, two ways", "chip": "Three calls, two ways",
-          "blurb": "Run both against the same three calls. Slow one down, make one fail, and watch where the time goes." }
+        {
+          "path": "/requests/start/",
+          "title": "Start here: the problem and the two patterns",
+          "chip": "Start here",
+          "blurb": "What a request waterfall is, what Promise.all does, and the words used in the lessons."
+        },
+        {
+          "path": "/requests/race/",
+          "title": "Three calls, two ways",
+          "chip": "Three calls, two ways",
+          "blurb": "Run both against the same three calls. Slow one down, make one fail, and watch where the time goes."
+        }
       ]
     }
-  ]
+  ],
+  "origin": {
+    "text": "The format comes from Sam Peterson's Lunch & Learn, the original site of this kind.",
+    "url": "https://lnl.sam-peterson.com"
+  }
 }
