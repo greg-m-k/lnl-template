@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The problem and the two patterns · Lunch & Learn</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='6' fill='%232563eb'/%3E%3Ccircle cx='23' cy='16' r='6' fill='%2316a34a'/%3E%3C/svg%3E">
+</head>
+<body>
+<main class="prose">
+  <h1>Sequential vs Parallel Requests</h1>
+  <p class="lead">Two patterns for the same problem: a page needs several answers from the server before it can show itself.
+    This page explains the problem and both patterns from the ground up, and defines every term. The lesson after it lets you
+    run them.</p>
+
+  <h2>The problem</h2>
+  <p>A profile page shows the user, their recent orders and some recommendations. Each comes from its own endpoint, and none
+    of them needs another's answer to be asked. The page cannot finish until all three have arrived, so the time the user waits
+    is decided by how the page asks.</p>
+
+  <div class="cols">
+    <section class="panel" data-color="blue">
+      <h2>Sequential requests</h2>
+      <p><strong>Ask, wait, then ask the next.</strong> Each <code>await</code> holds the next call back until the previous answer
+        is in. The total wait is the sum of every call.</p>
+<pre>user          ████
+orders            ████
+recommendations       ████</pre>
+      <p><strong>What you get:</strong> code that reads top to bottom, and a natural place to stop when one call fails.</p>
+      <p><strong>What it costs:</strong> the user waits for the sum. Each call you add makes the page slower by its whole length.</p>
+    </section>
+    <section class="panel" data-color="green">
+      <h2>Parallel requests</h2>
+      <p><strong>Ask for everything at once.</strong> Start every call, then wait for the set with <code>Promise.all</code>.
+        The total wait is the slowest call.</p>
+<pre>user          ████
+orders        ████
+recommendations ████</pre>
+      <p><strong>What you get:</strong> the page waits only as long as its slowest answer.</p>
+      <p><strong>What it costs:</strong> more load on the server at the same moment, and you have to decide what to show when some
+        calls fail and others succeed.</p>
+    </section>
+  </div>
+
+  <h2>Terms</h2>
+  <dl>
+    <dt>Request waterfall</dt><dd>Calls that run one after another when they did not need to, drawn on a timeline as steps going down and to the right.</dd>
+    <dt>Independent calls</dt><dd>Calls whose inputs do not include each other's outputs. Only these can run in parallel.</dd>
+    <dt>Promise.all</dt><dd>Waits for every promise in a list and gives back all the results. If any promise rejects, it rejects at once with that error.</dd>
+    <dt>Promise.allSettled</dt><dd>Waits for every promise and reports each one as fulfilled or rejected, so one failure does not hide the other answers.</dd>
+    <dt>Latency</dt><dd>The time from asking to receiving an answer. Here it is measured in the browser with <code>performance.now()</code>.</dd>
+  </dl>
+  <div class="callout insight">Neither pattern is always right. Independent calls should run in parallel. Dependent calls cannot,
+    and forcing them to only moves the waiting somewhere harder to see.</div>
+</main>
+<script type="module">import { lesson } from "/lib/site.js"; lesson(document.querySelector("main"));</script>
+</body>
+</html>

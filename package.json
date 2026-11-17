@@ -1,0 +1,16 @@
+{
+  "name": "lnl-template",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8800",
+    "test": "node --test test/*.test.mjs",
+    "ui": "node --test test/ui.mjs",
+    "new-lesson": "node scripts/new-lesson.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.65.1",
+    "wrangler": "^4.163.0"
+  }
+}
