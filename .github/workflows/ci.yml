@@ -1,0 +1,30 @@
+# Checks every push and pull request: unit tests, then the browser walkthrough of every page
+# against a local wrangler dev. Deploys nothing and needs no secrets.
+# Deploying is done by Cloudflare Workers Builds (see README), or by deploy.yml if you opt in.
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Start the site locally
+        run: |
+          npx wrangler dev --port 8800 > wrangler-dev.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:8800/ > /dev/null && exit 0; sleep 1; done
+          cat wrangler-dev.log; exit 1
+      - name: Walk every page in Chrome
+        run: npm run ui
+        env:
+          CHANNEL: chrome

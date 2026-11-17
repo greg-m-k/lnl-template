@@ -25,8 +25,57 @@ npm run dev          # http://localhost:8800
 npm run ui           # in a second terminal: walks every page in Edge (CHANNEL=chrome for Chrome)
 ```
 
-Runs on Cloudflare Workers. Before the first deploy, rename the Worker and set your domain in `wrangler.jsonc`, set
-`repo` in `public/topics.json` to your repository URL, then `npm run deploy`.
+## Put it on Cloudflare
+
+The whole kit is one Cloudflare Worker: it serves `public/` and answers each topic's `/api/...`. The free plan is
+enough. Topics that need more (D1 databases, Queues, Durable Objects) add them to `wrangler.jsonc` and they deploy the
+same way.
+
+### 1. Make it yours
+
+In `wrangler.jsonc`, change `"name": "lnl"` to a Worker name that is unique in your Cloudflare account. In
+`public/topics.json`, set `"repo"` to your repository's URL so each topic links to its source. Commit and push.
+
+### 2. Connect the repository (recommended: Workers Builds)
+
+Cloudflare builds and deploys straight from GitHub. There are no API tokens to create and no secrets to store in GitHub.
+
+1. In the Cloudflare dashboard: **Workers & Pages > Create > Import a repository**.
+2. **Connect GitHub** and install the Cloudflare GitHub app. Give it access to this repository only.
+3. Pick the repository and set:
+   - **Project name**: exactly the `name` in `wrangler.jsonc`.
+   - **Build command**: `npm test` (a failing test stops the deploy).
+   - **Deploy command**: `npx wrangler deploy`.
+   - **Non-production branch deploy command**: `npx wrangler versions upload`.
+4. **Deploy**.
+
+From then on, every push to `main` deploys, and every other branch gets its own preview URL, which is posted on its pull
+request. Builds and logs are under the Worker's **Deployments** tab.
+
+### 3. Your own domain (optional)
+
+In `wrangler.jsonc`, uncomment `routes` and set your hostname (`lnl.example.com`) with `"custom_domain": true`. The
+domain's zone must be on the same Cloudflare account. The next deploy creates the DNS record and certificate.
+
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and pull request: `npm test`, then `wrangler dev` and the browser
+walkthrough of every page in Chrome. It needs no secrets. Turn on branch protection for `main` and require the `ci`
+check, so nothing merges, and therefore nothing deploys, unless every lesson still works.
+
+### Deploying from GitHub Actions instead
+
+If you cannot install the Cloudflare GitHub app, use `.github/workflows/deploy.yml`. It is off until you opt in:
+
+1. Create an API token in Cloudflare (**My Profile > API Tokens > Create Token > "Edit Cloudflare Workers"**).
+2. In GitHub, **Settings > Secrets and variables > Actions**: add secrets `CLOUDFLARE_API_TOKEN` and
+   `CLOUDFLARE_ACCOUNT_ID`, and a variable `DEPLOY_WITH_ACTIONS` = `true`.
+
+Use one deploy path, not both.
+
+### From your laptop
+
+`npx wrangler login`, then `npm run deploy`.
 
 ## Make a topic
 

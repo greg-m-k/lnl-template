@@ -108,7 +108,14 @@ patterns as intended; only de-duplicate inside one file.
 5. Write each lesson page to the anatomy above, using `public/requests/` as the worked example.
 6. `lesson-reviewer` agent: review every page as a senior engineer new to the domain. Fix what it finds.
 7. `session-facilitator` agent: write `topics/<slug>/FACILITATION.md`.
-8. `npm test`, `npm run dev`, `npm run ui`. All green before you ask to deploy.
+8. `npm test`, `npm run dev`, `npm run ui`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
+   checks, and on a repository connected to Cloudflare Workers Builds a push to `main` deploys. Open a pull request for
+   review; its preview URL is the place to try the topic before it goes live.
+
+Anything a topic needs from Cloudflare (D1, Queues, Durable Objects, service bindings) is declared in `wrangler.jsonc`
+and committed, so every deploy path uses the same setup. Create a database or queue once with wrangler
+(`npx wrangler d1 create <name>`, `npx wrangler queues create <name>`) and commit the id it prints into `wrangler.jsonc`;
+do not configure bindings by hand in the dashboard, where the next deploy would overwrite them.
 
 ## Commands
 
