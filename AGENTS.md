@@ -75,7 +75,8 @@ Each pattern keeps one colour across the whole topic: `blue`, `green`, `purple` 
 
 - Plain and quiet, like a well-made reference page. The running patterns are the show.
 - No coloured bars on top of cards or panels, no number badges, no gradients-as-decoration, no glow, no hero.
-  A pattern's colour appears only in its name, its panel heading and its timeline bars.
+  A pattern's colour appears only in its name, its own panel and its timeline bars. Panels that are not one pattern's
+  (controls, steps to take, shared results) stay neutral white, so a colour always means the same pattern.
 - Paragraph text runs the full width of the column. Do not cap line length.
 - Every page fits a 390px phone with no sideways scrolling; the chip row scrolls on its own.
 - Light and dark mode both work, from the tokens in `styles.css`.
