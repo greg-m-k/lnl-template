@@ -38,7 +38,8 @@ same way.
 ### 1. Make it yours
 
 In `wrangler.jsonc`, change `"name": "lnl"` to a Worker name that is unique in your Cloudflare account. In
-`public/topics.json`, set `"repo"` to your repository's URL so each topic links to its source. Commit and push.
+`public/topics.json`, set `"repo"` to your repository's URL so each topic links to its source, and `"author"` to
+your name and site for the footer credit. Commit and push.
 
 ### 2. Connect the repository (recommended: Workers Builds)
 

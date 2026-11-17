@@ -28,6 +28,7 @@
     </div>
     <div class="bar">
       <button class="switch" id="fail-orders" aria-pressed="false">Make orders fail</button>
+      <span class="status">Only this page sees it, and it is off again when you reload.</span>
     </div>
     <p class="status">Try: all three at 300ms. Then recommendations at 1200ms. Then make orders fail: which pattern still shows the recommendations?</p>
   </div>
@@ -57,7 +58,7 @@
 
   <div class="callout insight">Sequential costs the sum of the calls; parallel costs the slowest one. The gap grows with every
     call you add. Sequential is still right when a call needs the previous answer, for example the orders of the user you just
-    looked up. Then the waterfall is the shape of the data, not a mistake.</div>
+    looked up. In that case the calls have to wait for each other.</div>
 </main>
 <script type="module">
 import { $, logger, say, press, pressed, timeline, showSource, busy } from "/lib/ui.js";

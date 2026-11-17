@@ -1,6 +1,6 @@
 // PATTERN: Parallel requests.
-// Start every call at once and wait for all of them with Promise.all. The total is the slowest
-// call, not the sum. fetchJson reports a failure as { ok: false } instead of throwing, so one
+// Start every call at once and wait for all of them with Promise.all. The total is the time
+// of the slowest call. fetchJson reports a failure as { ok: false } instead of throwing, so one
 // failed call does not hide the others: every call is made, and the page decides what to show
 // with the answers it did get.
 // Returns one measured span per call, in ms from the start of the run.

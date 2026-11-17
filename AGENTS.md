@@ -71,6 +71,18 @@ diagram in a `<pre>`, what you get, what it costs, then a glossary (`<dl>`) of e
 
 Each pattern keeps one colour across the whole topic: `blue`, `green`, `purple` or `orange`.
 
+## Writing
+
+Plain declarative sentences that say what happens. Write for a senior engineer reading carefully, not for a skimmer.
+
+- No contrast framing: not "it's not X, it's Y", not "X, not Y", not "Neither A nor B is better". Say what each thing does.
+- No slogans or punchlines ("the race is the lesson", "availability now, consistency eventually").
+- No filler intensifiers (really, truly, simply, just) and no rhetorical questions in prose. A question to the room
+  belongs in a control panel's "try this" line.
+- One idea per sentence where you can. Define a term the first time, then use it the same way every time.
+- The footer credits the author (`author` in `public/topics.json`). Notes about what a visitor does, such as how long
+  data they create is kept or when switches turn off, go on the lesson page next to the control that does it.
+
 ## House style
 
 - Plain and quiet, like a well-made reference page. The running patterns are the show.

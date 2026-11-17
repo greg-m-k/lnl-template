@@ -60,6 +60,15 @@ test("every page fits a phone screen without sideways scrolling", async () => {
   await page.setViewportSize({ width: 1280, height: 900 });
 });
 
+test("footers credit the author and pages use plain statements", async () => {
+  for (const path of ["/", ...lessons.map((l) => l.path)]) {
+    await page.goto(BASE + path);
+    await page.waitForSelector("footer");
+    assert.equal(await page.textContent("footer"), `Made by ${catalogue.author.name}.`, path);
+    assert.doesNotMatch(await page.textContent("main"), /\bNeither\b|, not (a|an|the) |is the lesson|slide's word/, path);
+  }
+});
+
 test("nothing logged an error", () => {
   assert.deepEqual(errors, []);
 });

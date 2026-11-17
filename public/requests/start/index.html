@@ -51,7 +51,7 @@ recommendations ████</pre>
     <dt>Promise.allSettled</dt><dd>Waits for every promise and reports each one as fulfilled or rejected, so one failure does not hide the other answers.</dd>
     <dt>Latency</dt><dd>The time from asking to receiving an answer. Here it is measured in the browser with <code>performance.now()</code>.</dd>
   </dl>
-  <div class="callout insight">Neither pattern is always right. Independent calls should run in parallel. Dependent calls cannot,
+  <div class="callout insight">Independent calls should run in parallel. Dependent calls cannot,
     and forcing them to only moves the waiting somewhere harder to see.</div>
 </main>
 <script type="module">import { lesson } from "/lib/site.js"; lesson(document.querySelector("main"));</script>

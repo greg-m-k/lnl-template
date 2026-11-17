@@ -1,4 +1,6 @@
 // Site frame: renders the home page and each lesson's chips, "Next" link and footer from topics.json.
+// The footer only credits the author. Notes about what a visitor does (switches, data they create)
+// belong on the lesson page where they do it.
 // Topics and lessons are listed in one place, public/topics.json; nothing else repeats them.
 import { el } from "./ui.js";
 
@@ -16,7 +18,7 @@ export async function home(main) {
       el("ul", { class: "cards" }, ...t.lessons.map((l) =>
         el("li", {}, el("a", { class: "card", href: l.path }, el("h3", {}, l.title), el("p", {}, l.blurb))))))),
   );
-  document.body.append(el("footer", { class: "site" }, site.footer));
+  document.body.append(el("footer", { class: "site" }, ...credit(site)));
 }
 
 // A lesson page: chips for every lesson in its topic on top, "Next" and the footer at the bottom.
@@ -32,8 +34,10 @@ export async function lesson(main) {
   nav.scrollLeft = current.offsetLeft - nav.offsetLeft - 18;  // on a phone, open scrolled to this lesson
   const next = topic.lessons[topic.lessons.findIndex((l) => l.path === here) + 1];
   if (next) main.append(el("p", { class: "next" }, "Next: ", el("a", { href: next.path }, `${next.title} →`)));
-  main.append(el("footer", {}, site.footer));
+  main.append(el("footer", {}, ...credit(site)));
 }
+
+const credit = (site) => ["Made by ", el("a", { href: site.author.url }, site.author.name), "."];
 
 // "The source for this topic": a link when topics.json names the repository, else the folder.
 function source(site, topic) {
