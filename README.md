@@ -47,7 +47,7 @@ Deploying (below) gives a topic its live page on your Lunch & Learn site. It is 
 
 ## Put it on Cloudflare
 
-The whole kit is one Cloudflare Worker: it serves `public/` and answers each topic's `/api/...`. The free plan is
+The whole kit is one Cloudflare Worker: it serves `public/` and answers each topic's `/<topic>/api/...`. The free plan is
 enough. Topics that need more (D1 databases, Queues, Durable Objects) add them to `wrangler.jsonc` and they deploy the
 same way.
 
@@ -97,6 +97,21 @@ Use one deploy path, not both.
 ### From your laptop
 
 `npx wrangler login`, then `npm run deploy`.
+
+## Mount a topic on another Lunch & Learn site
+
+Each topic lives entirely below its own path (`/requests/...` for the example): its pages, its API and the site frame
+it uses. So a topic deployed from this repository can also appear on another Lunch & Learn site, next to that site's
+own topics. On the other site:
+
+1. Bind this Worker as a service, in its `wrangler.jsonc`:
+   `"services": [{ "binding": "REQUESTS", "service": "<this Worker's name>" }]`.
+2. Forward the topic's path to it, in its Worker:
+   `if (url.pathname.startsWith("/requests/")) return env.REQUESTS.fetch(request);`
+   and add `"/requests/*"` to its `run_worker_first`.
+3. List the topic and its lessons in its `topics.json`, so its home page shows the cards.
+
+lnl.greg.kitchen serves the useEffect topic this way, from its own repository, below `/effects/`.
 
 ## Make a topic
 

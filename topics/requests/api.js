@@ -1,5 +1,5 @@
 // TOPIC: Sequential vs Parallel Requests · the server both patterns call.
-// GET /api/requests/work?name=profile&ms=300&fail=1
+// GET /requests/api/work?name=profile&ms=300&fail=1
 // Really waits `ms` before answering (0 to 3000), so the browser's timings are real network
 // timings, not numbers drawn on a slide. fail=1 answers 503 after the wait, like a service
 // that times out and then gives up.
@@ -16,7 +16,7 @@ export function parseWork(url) {
 
 export async function handle(request) {
   const path = new URL(request.url).pathname;
-  if (path !== "/api/requests/work") return Response.json({ error: "not found" }, { status: 404 });
+  if (path !== "/requests/api/work") return Response.json({ error: "not found" }, { status: 404 });
   const work = parseWork(request.url);
   if (work.error) return Response.json(work, { status: 400 });
   const started = Date.now();

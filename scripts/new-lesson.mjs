@@ -28,13 +28,13 @@ export function addLesson(catalogue, { topic, lesson, title }) {
   return { ...catalogue, topics };
 }
 
-const page = (title, start) => `<!doctype html>
+const page = (slug, title, start) => `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title} · Lunch & Learn</title>
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/${slug}/site/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='6' fill='%232563eb'/%3E%3Ccircle cx='23' cy='16' r='6' fill='%2316a34a'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -44,7 +44,7 @@ const page = (title, start) => `<!doctype html>
     <code>&lt;strong data-color="..."&gt;</code>), what to try, and a link back to Start here for the terms.</p>
   <!-- See AGENTS.md "Lesson anatomy" and public/requests/race/index.html for a complete example. -->
 </main>
-<script type="module">import { lesson } from "/lib/site.js"; lesson(document.querySelector("main"));</script>
+<script type="module">import { lesson } from "/${slug}/site/lib/site.js"; lesson(document.querySelector("main"));</script>
 </body>
 </html>
 `;
@@ -87,7 +87,7 @@ function main([topic, lesson, title]) {
     const dir = new URL(`public${l.path}`, root);
     if (existsSync(new URL("index.html", dir))) continue;
     mkdirSync(dir, { recursive: true });
-    writeFileSync(new URL("index.html", dir), page(l.title, l.path.endsWith("/start/")));
+    writeFileSync(new URL("index.html", dir), page(topic, l.title, l.path.endsWith("/start/")));
     written.push(`public${l.path}index.html`);
   }
   if (isNewTopic) {

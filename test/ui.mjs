@@ -36,6 +36,20 @@ test("every lesson: chips for its topic with itself marked current", async () =>
   }
 });
 
+test("every lesson: each request it makes stays below its topic's path, so a hub can mount the topic", async () => {
+  for (const t of catalogue.topics) for (const l of t.lessons) {
+    const seen = [];
+    const record = (r) => { const u = new URL(r.url()); if (u.origin === new URL(BASE).origin) seen.push(u.pathname); };
+    page.on("request", record);
+    await page.goto(BASE + l.path);
+    await page.waitForSelector(".chips");
+    if (await page.locator("#run").count()) await page.click("#run");  // a lesson's run button calls its API
+    await page.waitForLoadState("networkidle");
+    page.off("request", record);
+    for (const p of seen) assert.ok(p.startsWith(`/${t.slug}/`), `${l.path} requested ${p}`);
+  }
+});
+
 test("requests: parallel beats sequential, and a failure stops only the sequential run", async () => {
   await page.goto(`${BASE}/requests/race/`);
   await page.click("#run");

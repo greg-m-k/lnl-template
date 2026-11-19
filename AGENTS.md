@@ -32,6 +32,17 @@ coding agents and for the senior engineers who direct them.
 
 ## Layout
 
+A topic owns every path below `/<topic>/`, so another Lunch & Learn site can mount it by forwarding `/<topic>/*`
+to this Worker:
+
+- Pages: `/<topic>/<lesson>/`.
+- Server code: `/<topic>/api/...`.
+- The site frame: `/<topic>/site/styles.css`, `/<topic>/site/lib/...` and `/<topic>/site/topics.json`. These are
+  the files in `public/`, served below each topic by `src/index.js`.
+
+A lesson page never links `/styles.css`, `/lib/...` or `/api/...` directly. `npm run new-lesson` writes the right
+paths, and the tests check them.
+
 ```
 public/topics.json                    The catalogue: site intro, topics, lessons. The one place lessons are listed.
 public/index.html                     Home: rendered from topics.json (lib/site.js home()).
@@ -44,7 +55,7 @@ topics/<topic>/api.js                 The topic's real server code, registered i
 topics/<topic>/patterns/<pattern>/    A topic that needs its own Workers puts each pattern's services here.
 topics/<topic>/TOPIC.md               The question, the patterns, the glossary, and the claim each lesson proves.
 topics/<topic>/FACILITATION.md        The talk track for presenting the topic live.
-src/index.js                          The site Worker: static files, plus /api/<topic>/... to the topic.
+src/index.js                          The site Worker: /<topic>/api/... to the topic, /<topic>/site/... to the frame.
 scripts/new-lesson.mjs                Scaffold: npm run new-lesson -- <topic> <lesson> "Title".
 test/site.test.mjs                    Catalogue, scaffold and server tests (npm test).
 test/ui.mjs                           Browser walkthrough of every page (npm run ui, needs npm run dev).

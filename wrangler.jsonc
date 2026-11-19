@@ -1,9 +1,9 @@
 {
-  // One Worker serves the site (public/) and every topic's API (/api/<topic>/...).
+  // One Worker serves the site (public/) and every topic below its own path: /<topic>/api/..., /<topic>/site/...
   // Rename the Worker and set your domain before the first deploy.
   "name": "lnl",
   "main": "src/index.js",
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*"] }
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/*/api/*", "/*/site/*"] }
   // "routes": [{ "pattern": "lnl.example.com", "custom_domain": true }]
 }

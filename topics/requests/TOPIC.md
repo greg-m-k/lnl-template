@@ -6,7 +6,7 @@ Where everything lives:
 
 - Pages: `public/requests/start/`, `public/requests/race/`
 - Pattern code the browser runs: `public/requests/patterns/sequential.js`, `public/requests/patterns/parallel.js`
-- Server code: `topics/requests/api.js` (`GET /api/requests/work?name=&ms=&fail=`), registered in `src/index.js`
+- Server code: `topics/requests/api.js` (`GET /requests/api/work?name=&ms=&fail=`), registered in `src/index.js`
 - Talk track: `topics/requests/FACILITATION.md`
 
 ## The question

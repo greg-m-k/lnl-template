@@ -4,7 +4,9 @@
 // Topics and lessons are listed in one place, public/topics.json; nothing else repeats them.
 import { el } from "./ui.js";
 
-const catalogue = () => fetch("/topics.json").then((r) => r.json());
+// The home reads /topics.json; a lesson reads it below its own topic (/<slug>/site/topics.json), so a topic
+// mounted on another site still finds its own lessons.
+const catalogue = (path = "/topics.json") => fetch(path).then((r) => r.json());
 const slash = (p) => (p.endsWith("/") ? p : `${p}/`);
 
 // The home page: header, then one section of cards per topic.
@@ -24,7 +26,7 @@ export async function home(main) {
 
 // A lesson page: chips for every lesson in its topic on top, "Next" and the footer at the bottom.
 export async function lesson(main) {
-  const site = await catalogue();
+  const site = await catalogue(`/${location.pathname.split("/")[1]}/site/topics.json`);
   const here = slash(location.pathname);
   const topic = site.topics.find((t) => t.lessons.some((l) => l.path === here));
   if (!topic) throw new Error(`${here} is not listed in topics.json`);
