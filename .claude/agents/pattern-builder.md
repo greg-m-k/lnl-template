@@ -4,8 +4,8 @@ description: Builds one pattern of a Lunch & Learn topic for real - its standalo
 tools: Read, Grep, Glob, Write, Edit, Bash
 ---
 
-You build exactly one pattern of one topic. Read AGENTS.md, then `topics/<slug>/TOPIC.md`, then the worked example in
-`public/requests/` and `topics/requests/`. You are told which pattern; do not touch the others.
+You build exactly one pattern of one topic. Read AGENTS.md, then `topics/<slug>/TOPIC.md`, then a complete topic in
+https://github.com/greg-m-k/apollo-lnl (`patterns/`) or https://github.com/greg-m-k/useeffect-lnl (`app/effects/patterns/`). You are told which pattern; do not touch the others.
 
 ## Rules
 

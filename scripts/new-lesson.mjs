@@ -42,7 +42,7 @@ const page = (slug, title, start) => `<!doctype html>
   <h1>${title}</h1>
   <p class="lead">TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with
     <code>&lt;strong data-color="..."&gt;</code>), what to try, and a link back to Start here for the terms.</p>
-  <!-- See AGENTS.md "Lesson anatomy" and public/requests/race/index.html for a complete example. -->
+  <!-- See AGENTS.md "Lesson anatomy". Complete lessons: https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl. -->
 </main>
 <script type="module">import { lesson } from "/${slug}/site/lib/site.js"; lesson(document.querySelector("main"));</script>
 </body>

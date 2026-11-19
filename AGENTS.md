@@ -137,7 +137,7 @@ patterns as intended; only de-duplicate inside one file.
    the topic, its Start here page and `TOPIC.md` if it does not exist.
 3. Fill in the topic's `title`, `emoji`, `summary` and each lesson's `blurb` in `public/topics.json`.
 4. `pattern-builder` agent, once per pattern: the real pattern code and any server code, test first.
-5. Write each lesson page to the anatomy above, using `public/requests/` as the worked example.
+5. Write each lesson page to the anatomy above. For complete lessons, see https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl.
 6. `lesson-reviewer` agent: review every page as a senior engineer new to the domain. Fix what it finds.
 7. `session-facilitator` agent: write `topics/<slug>/FACILITATION.md`.
 8. `npm test`, `npm run dev`, `npm run ui`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same

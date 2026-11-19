@@ -50,21 +50,6 @@ test("every lesson: each request it makes stays below its topic's path, so a hub
   }
 });
 
-test("requests: parallel beats sequential, and a failure stops only the sequential run", async () => {
-  await page.goto(`${BASE}/requests/race/`);
-  await page.click("#run");
-  await page.waitForFunction(() => /Parallel \d+ms/.test(document.querySelector("#status").textContent), null, { timeout: 15000 });
-  const [seq, par] = (await page.textContent("#status")).match(/\d+(?=ms)/g).map(Number);
-  assert.ok(seq >= 900 && par < seq, `${seq} vs ${par}`);
-  assert.match(await page.textContent("#seq-code"), /PATTERN: Sequential requests/);
-
-  await page.click("#fail-orders");
-  await page.click("#run");
-  await page.waitForFunction(() => /Parallel \d+ms/.test(document.querySelector("#status").textContent) && !document.querySelector("#run").disabled, null, { timeout: 15000 });
-  assert.match(await page.textContent("#seq-timeline"), /not asked/);
-  assert.doesNotMatch(await page.textContent("#par-timeline"), /not asked/);
-});
-
 test("every page fits a phone screen without sideways scrolling", async () => {
   await page.setViewportSize({ width: 390, height: 800 });
   for (const path of ["/", ...lessons.map((l) => l.path)]) {

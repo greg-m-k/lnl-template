@@ -4,8 +4,8 @@ description: Turns a design argument ("should we federate or project?", "retry o
 tools: Read, Grep, Glob, Write, WebSearch, WebFetch
 ---
 
-You design one Lunch & Learn topic. Read AGENTS.md first; its rules bind you. Then read
-`topics/requests/TOPIC.md` and `public/requests/` as the worked example.
+You design one Lunch & Learn topic. Read AGENTS.md first; its rules bind you. Then read a complete
+topic, such as https://github.com/greg-m-k/apollo-lnl or https://github.com/greg-m-k/useeffect-lnl.
 
 Your output is one file: `topics/<slug>/TOPIC.md`. Write no code.
 

@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { addLesson } from "../scripts/new-lesson.mjs";
-import { parseWork, handle } from "../topics/requests/api.js";
+import { handle } from "../topics/sample/api.js";
 import worker from "../src/index.js";
 
 const root = new URL("../", import.meta.url);
@@ -41,34 +41,29 @@ test("scaffold: refuses a duplicate lesson and a bad slug", () => {
   assert.throws(() => addLesson(sample, { topic: "Requests!", lesson: "x", title: "x" }), /slugs/);
 });
 
-test("requests api: parses and clamps the query at the boundary", () => {
-  assert.deepEqual(parseWork("https://x/requests/api/work?name=user&ms=300"), { name: "user", ms: 300, fail: false });
-  assert.equal(parseWork("https://x/requests/api/work?ms=99999").ms, 3000);
-  assert.equal(parseWork("https://x/requests/api/work?ms=-5").ms, 0);
-  assert.equal(parseWork("https://x/requests/api/work?fail=1").fail, true);
-  assert.ok(parseWork("https://x/requests/api/work?ms=abc").error);
+test("sample topic: ships as a placeholder, with no example content to delete", () => {
+  assert.deepEqual(catalogue.topics.map((t) => t.slug), ["sample"]);
+  assert.equal(catalogue.topics[0].title, "Sample topic");
+  assert.ok(!existsSync(new URL("public/requests", root)) && !existsSync(new URL("topics/requests", root)));
 });
 
-test("requests api: really waits, then answers or fails", async () => {
-  const t0 = Date.now();
-  const ok = await handle(new Request("https://x/requests/api/work?name=user&ms=120"));
-  assert.ok(Date.now() - t0 >= 110);
+test("sample api: answers below its topic and reports its own time", async () => {
+  const ok = await handle(new Request("https://x/sample/api/hello"));
   assert.equal(ok.status, 200);
-  assert.equal((await ok.json()).name, "user");
-  const failed = await handle(new Request("https://x/requests/api/work?name=orders&ms=0&fail=1"));
-  assert.equal(failed.status, 503);
+  assert.ok(ok.headers.has("x-time-ms"));
+  assert.equal((await handle(new Request("https://x/sample/api/nope"))).status, 404);
 });
 
 test("site worker: a topic owns everything below /<slug>/: its API, the site frame, its pages", async () => {
   const env = { ASSETS: { fetch: (r) => new Response(`asset ${new URL(r.url).pathname}`) } };
   const get = (path) => worker.fetch(new Request(`https://x${path}`), env);
-  assert.equal(await (await get("/requests/race/")).text(), "asset /requests/race/");
-  assert.equal((await get("/requests/api/work?ms=0")).status, 200);
+  assert.equal(await (await get("/sample/lesson/")).text(), "asset /sample/lesson/");
+  assert.equal((await get("/sample/api/hello")).status, 200);
   assert.equal((await get("/nope/api/x")).status, 404);
   // The frame has one copy in public/ and is served below every topic, so a hub can forward /<slug>/* alone.
-  assert.equal(await (await get("/requests/site/styles.css")).text(), "asset /styles.css");
-  assert.equal(await (await get("/requests/site/lib/ui.js")).text(), "asset /lib/ui.js");
-  assert.equal(await (await get("/requests/site/topics.json")).text(), "asset /topics.json");
+  assert.equal(await (await get("/sample/site/styles.css")).text(), "asset /styles.css");
+  assert.equal(await (await get("/sample/site/lib/ui.js")).text(), "asset /lib/ui.js");
+  assert.equal(await (await get("/sample/site/topics.json")).text(), "asset /topics.json");
 });
 
 test("every lesson page loads the frame and calls its API below its own topic", () => {

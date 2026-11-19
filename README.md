@@ -26,8 +26,9 @@ It comes with:
   and in dark mode. Topics and lessons are listed once, in `public/topics.json`.
 - Lesson building blocks (`public/lib/ui.js`): measured timelines, consoles, switches, and `showSource` to put the exact
   pattern code that ran on screen.
-- A worked example topic, **Sequential vs Parallel Requests**, with a Start here page, one interactive lesson, its real
-  Worker endpoint, tests and a facilitation script.
+- A placeholder topic, **Sample topic**, showing where everything goes: a Start here page and one lesson page, a
+  placeholder endpoint, and TODO notes. Rename or replace it with your own topic. For complete Lunch & Learns built
+  from this kit, see [apollo-lnl](https://github.com/greg-m-k/apollo-lnl) and [useeffect-lnl](https://github.com/greg-m-k/useeffect-lnl).
 - `AGENTS.md`: the rules and workflow for building a topic, for coding agents and the engineers directing them.
 - Subagents in `.claude/agents/`: `topic-designer`, `pattern-builder`, `lesson-reviewer`, `session-facilitator`.
 - A scaffold: `npm run new-lesson -- <topic> <lesson> "Title"`.
@@ -100,15 +101,15 @@ Use one deploy path, not both.
 
 ## Mount a topic on another Lunch & Learn site
 
-Each topic lives entirely below its own path (`/requests/...` for the example): its pages, its API and the site frame
+Each topic lives entirely below its own path (`/sample/...` for the placeholder): its pages, its API and the site frame
 it uses. So a topic deployed from this repository can also appear on another Lunch & Learn site, next to that site's
 own topics. On the other site:
 
 1. Bind this Worker as a service, in its `wrangler.jsonc`:
-   `"services": [{ "binding": "REQUESTS", "service": "<this Worker's name>" }]`.
+   `"services": [{ "binding": "SAMPLE", "service": "<this Worker's name>" }]`.
 2. Forward the topic's path to it, in its Worker:
-   `if (url.pathname.startsWith("/requests/")) return env.REQUESTS.fetch(request);`
-   and add `"/requests/*"` to its `run_worker_first`.
+   `if (url.pathname.startsWith("/sample/")) return env.SAMPLE.fetch(request);`
+   and add `"/sample/*"` to its `run_worker_first`.
 3. List the topic and its lessons in its `topics.json`, so its home page shows the cards.
 
 lnl.greg.kitchen serves the useEffect topic this way, from its own repository, below `/effects/`.
@@ -121,5 +122,5 @@ Read `AGENTS.md`, then follow "Adding a topic, step by step". With Claude Code:
 > Use the topic-designer agent: our team argues about retrying failed calls vs failing fast.
 ```
 
-Delete the example topic (`public/requests/`, `topics/requests/`, its entry in `public/topics.json` and `src/index.js`,
-and its steps in `test/`) once you have your own.
+Replace the placeholder topic (`public/sample/`, `topics/sample/`, its entry in `public/topics.json` and `src/index.js`, and
+the sample checks in `test/`) with your own.

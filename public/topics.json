@@ -8,23 +8,23 @@
   },
   "topics": [
     {
-      "slug": "requests",
-      "emoji": "⏱️",
-      "title": "Sequential vs Parallel Requests",
-      "summary": "A page needs three independent answers from the server. Ask for them one after another, or all at once? Both run here against a real Worker, with the time each one takes measured as it happens.",
-      "source": "topics/requests",
+      "slug": "sample",
+      "emoji": "🧪",
+      "title": "Sample topic",
+      "summary": "TODO: the design question in one or two sentences, and what the lessons measure.",
+      "source": "topics/sample",
       "lessons": [
         {
-          "path": "/requests/start/",
-          "title": "Start here: the problem and the two patterns",
+          "path": "/sample/start/",
+          "title": "Start here: the problem and the patterns",
           "chip": "Start here",
-          "blurb": "What a request waterfall is, what Promise.all does, and the words used in the lessons."
+          "blurb": "TODO: what the reader will understand after this page."
         },
         {
-          "path": "/requests/race/",
-          "title": "Three calls, two ways",
-          "chip": "Three calls, two ways",
-          "blurb": "Run both against the same three calls. Slow one down, make one fail, and watch where the time goes."
+          "path": "/sample/lesson/",
+          "title": "Lesson",
+          "chip": "Lesson",
+          "blurb": "TODO: one sentence on what the reader will do and see."
         }
       ]
     }

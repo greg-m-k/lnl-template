@@ -5,9 +5,9 @@
 //   /<slug>/...       the topic's pages, from public/<slug>/
 // Plumbing only. A topic big enough to need its own Workers (a router, a queue consumer, databases) puts them
 // under topics/<slug>/patterns/<pattern>/ and its api.js forwards to them through service bindings.
-import * as requests from "../topics/requests/api.js";
+import * as sample from "../topics/sample/api.js";
 
-const TOPICS = { requests };
+const TOPICS = { sample };
 
 export default {
   async fetch(request, env) {
