@@ -1,6 +1,6 @@
-# 7. Replace the house stylesheet with Graffiti, used as shipped
+# 8. Replace the house stylesheet with Graffiti, used as shipped
 
-Depends on: 5 (Astro layouts). Comes before 8, which maps the code theme onto Graffiti's tokens.
+Depends on: 5 (Astro layouts). Comes before 9, which maps the code theme onto Graffiti's tokens.
 
 ## Decision
 
@@ -54,7 +54,7 @@ Docs: https://graffiti-ui.com/ · Source: https://github.com/stolinski/graffiti 
 2. Entry: likely `/standard` + `/components`, no preset theme. Pin the exact version.
 3. Rewrite the layouts, the sample pages, the scaffold templates and `lib/ui.js` markup to Graffiti classes (table).
 4. `src/styles/lesson.css` in `@layer lesson` (above Graffiti's): `[data-color]`, the timeline, the code theme from
-   todo 8, and only what step 1 finds missing. Target under ~60 lines. Every value is a Graffiti token.
+   todo 9, and only what step 1 finds missing. Target under ~60 lines. Every value is a Graffiti token.
 5. Delete `public/styles.css`.
 6. Tests: keep the 390px no-sideways-scroll check; add one that `lesson.css` has no hex/rgb/oklch literals.
 7. Rewrite `AGENTS.md` "House style" around Graffiti: the entry used, which classes a lesson uses, the

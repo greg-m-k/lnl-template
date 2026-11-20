@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 // One `pnpm run test` runs two projects:
 //   node:    catalogue and scaffold checks, and the real site served by Alchemy's test harness (test/*.test.*)
 //   browser: every page, rendered by Astro, laid out in a real Chrome (test/*.browser.test.ts)
@@ -23,7 +24,7 @@ export default getViteConfig({
         test: {
           name: 'node',
           environment: 'node',
-          include: ['test/**/*.test.{mjs,ts}'],
+          include: ['test/**/*.test.ts'],
           exclude: ['test/**/*.browser.test.ts'],
         },
       },

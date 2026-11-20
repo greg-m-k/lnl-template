@@ -20,7 +20,8 @@
   "scripts": {
     "dev": "alchemy dev",
     "test": "vitest run",
-    "new-lesson": "node scripts/new-lesson.mjs",
+    "check": "astro check",
+    "new-lesson": "node scripts/new-lesson.ts",
     "login": "alchemy profile edit --add Cloudflare",
     "deploy": "alchemy deploy",
     "destroy": "alchemy destroy"
@@ -28,9 +29,12 @@
   "devDependencies": {
     "@alchemy.run/frontend-frameworks": "2.0.0-beta.87",
     "@alchemy.run/test": "2.0.0-beta.87",
+    "@astrojs/check": "^0.9.12",
     "@effect/vitest": "^4.1.4",
+    "@types/node": "^26.6.6",
     "@vitest/browser-playwright": "^5.1.1",
     "astro": "^7.4.13",
+    "typescript": "^6.0.3",
     "vitest": "^5.1.1"
   },
   "dependencies": {

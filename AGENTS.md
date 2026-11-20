@@ -42,17 +42,19 @@ src/site.json                         The catalogue: site intro, topics, lessons
 src/layouts/Base.astro                The document every page shares: head, house stylesheet, <main>.
 src/layouts/Lesson.astro              A lesson: chips for its topic, Next link and footer, drawn from site.json.
 src/styles/site.css                   House style. Change it here, never per page.
-src/lib/ui.js                         Lesson helpers: el, logger, say, press/pressed, timeline, showSource, busy.
+src/lib/ui.ts                         Lesson helpers: el, logger, say, press/pressed, timeline, showSource, busy.
 src/pages/index.astro                 Home: one card per lesson, from site.json.
 src/pages/<topic>/<lesson>.astro      One page per lesson, in the Lesson layout. The first lesson of every topic is start.
-src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to src/topics/<topic>/server.js, found by folder.
-src/topics/<topic>/server.js          The topic's real server code: handle(request) returns a Response.
-src/topics/<topic>/patterns/<p>.js    Browser-side pattern code, one standalone file per pattern.
+src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to src/topics/<topic>/server.ts, found by folder.
+src/topics/<topic>/server.ts          The topic's real server code: handle(request) returns a Response.
+src/topics/<topic>/patterns/<p>.ts    Browser-side pattern code, one standalone file per pattern. Keep its types
+                                      minimal (let them be inferred): the file is what visitors read on screen.
 src/topics/<topic>/TOPIC.md           The question, the patterns, the glossary, and the claim each lesson proves.
 src/topics/<topic>/FACILITATION.md    The talk track for presenting the topic live.
-scripts/new-lesson.mjs                Scaffold: pnpm run new-lesson <topic> <lesson> "Title".
+scripts/new-lesson.ts                 Scaffold: pnpm run new-lesson <topic> <lesson> "Title".
 vitest.config.ts                      pnpm run test runs two projects: node and browser.
-test/*.test.mjs                       Node: catalogue, scaffold and config checks.
+tsconfig.json                         Astro's strict TypeScript; pnpm run check type-checks .ts and .astro files.
+test/*.test.ts                        Node: catalogue, scaffold and config checks.
 test/*.integ.test.ts                  Node: the real site, booted locally by Alchemy's test harness, driven over HTTP.
 test/*.browser.test.ts                Browser: page code in a real Chrome (Vitest browser mode), at desktop and phone widths.
 .claude/agents/                       Subagents for each stage of building and presenting a topic.
@@ -132,7 +134,7 @@ patterns as intended; only de-duplicate inside one file.
 1. `topic-designer` agent: turn the argument into `src/topics/<slug>/TOPIC.md` (question, patterns, glossary, claims
    table).
 2. `pnpm run new-lesson <slug> <lesson> "Title"` for each lesson in the claims table. The first call also creates
-   the topic, its Start here page, `TOPIC.md` and a placeholder `server.js` if they do not exist.
+   the topic, its Start here page, `TOPIC.md` and a placeholder `server.ts` if they do not exist.
 3. Fill in the topic's `title`, `emoji`, `summary` and each lesson's `blurb` in `src/site.json`.
 4. `pattern-builder` agent, once per pattern: the real pattern code and any server code, test first.
 5. Write each lesson page to the anatomy above. For complete lessons, see https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl.
@@ -150,6 +152,7 @@ by hand in the Cloudflare dashboard.
 
 ```
 pnpm install                      pnpm fetches the Node and pnpm versions set in package.json
+pnpm run check                    type-check every .ts and .astro file
 pnpm run test                     node checks, the site booted by Alchemy's harness, page code in Chrome
 pnpm run dev                      the site and APIs at http://localhost:8800
 pnpm run new-lesson <topic> <lesson> "Title"

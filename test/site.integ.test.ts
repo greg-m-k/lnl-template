@@ -18,7 +18,10 @@ const { test, beforeAll, afterAll, deploy, destroy } = Test.make({
 const stack = beforeAll(deploy(Stack), { timeout: 300_000 });
 afterAll(destroy(Stack));
 
-const base = Effect.map(stack, ({ url }) => url.replace(/\/+$/, ''));
+const base = Effect.map(stack, ({ url }) => {
+  if (!url) throw new Error('the stack did not report a url');
+  return url.replace(/\/+$/, '');
+});
 const html = (path: string) =>
   Effect.gen(function* () {
     const res = yield* Test.getWhenReady(`${yield* base}${path}`);

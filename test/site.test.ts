@@ -2,11 +2,12 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { addLesson } from "../scripts/new-lesson.mjs";
-import { handle } from "../src/topics/sample/server.js";
+import { addLesson } from "../scripts/new-lesson.ts";
+import { handle } from "../src/topics/sample/server.ts";
+
+import catalogue from "../src/site.json";
 
 const root = new URL("../", import.meta.url);
-const catalogue = JSON.parse(readFileSync(new URL("src/site.json", root), "utf8"));
 
 test("catalogue: slugs are unique and every topic opens with Start here", () => {
   const slugs = catalogue.topics.map((t) => t.slug);
@@ -29,7 +30,7 @@ const sample = { title: "t", topics: [{ slug: "requests", lessons: [{ path: "/re
 
 test("scaffold: a lesson in a new topic adds the topic with Start here first", () => {
   const after = addLesson(sample, { topic: "caching", lesson: "stale", title: "When the cache is stale" });
-  const topic = after.topics.at(-1);
+  const topic = after.topics.at(-1)!;
   assert.equal(topic.slug, "caching");
   assert.deepEqual(topic.lessons.map((l) => l.path), ["/caching/start/", "/caching/stale/"]);
   assert.equal(sample.topics.length + 1, after.topics.length, "the input is not changed");
@@ -90,14 +91,26 @@ test("scripts: workflows and docs run package.json scripts, never a tool directl
     assert.ok(pkg.scripts[name], `script ${name}`);
   }
   // Cloudflare is set up by Alchemy (alchemy.run.ts); wrangler is not used.
-  assert.ok(!Object.values(pkg.scripts).some((s) => /\bwrangler\b/.test(s)), "no wrangler script");
+  assert.ok(!Object.values(pkg.scripts).some((s) => /\bwrangler\b/.test(String(s))), "no wrangler script");
   assert.ok(!pkg.devDependencies?.wrangler && !existsSync(new URL("wrangler.jsonc", root)), "no wrangler");
   const dir = new URL(".github/workflows/", root);
   const files = [...readdirSync(dir).filter((f) => f.endsWith(".yml")).map((f) => new URL(f, dir)),
     new URL("README.md", root), new URL("AGENTS.md", root)];
   for (const file of files) {
-    assert.doesNotMatch(readFileSync(file, "utf8"), /pnpm exec|pnpm wrangler/, file.pathname.split("/").pop());
+    assert.doesNotMatch(readFileSync(file, "utf8"), /pnpm exec|pnpm wrangler/, file.pathname.split("/").pop() ?? "");
   }
+});
+
+test("typescript: every source file is TypeScript, and `check` type-checks them", () => {
+  const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
+  assert.match(pkg.scripts.check ?? "", /astro check/);
+  const js: string[] = [];
+  for (const dir of ["src", "scripts", "test"]) {
+    for (const f of readdirSync(new URL(`${dir}/`, root), { recursive: true, encoding: "utf8" })) {
+      if (/\.(m?js)$/.test(f)) js.push(`${dir}/${f}`);
+    }
+  }
+  assert.deepEqual(js, []);
 });
 
 test("ci: least-privilege token, one run per change, cancelled when superseded", () => {
@@ -108,7 +121,10 @@ test("ci: least-privilege token, one run per change, cancelled when superseded",
 });
 
 test("renovate: held a few days, weekly, beta packages pinned in a group of their own", () => {
-  const cfg = JSON.parse(readFileSync(new URL("renovate.json", root), "utf8"));
+  type Rule = { groupName?: string; rangeStrategy?: string; matchPackageNames: string[] };
+  const cfg: { minimumReleaseAge?: string; schedule?: string[]; packageRules?: Rule[] } = JSON.parse(
+    readFileSync(new URL("renovate.json", root), "utf8"),
+  );
   assert.match(cfg.minimumReleaseAge ?? "", /^\d+ days$/);
   assert.ok(cfg.schedule?.length, "a schedule");
   const own = cfg.packageRules?.find((r) => r.groupName === "alchemy and graffiti");

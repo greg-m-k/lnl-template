@@ -3,8 +3,8 @@
 Where everything for the `sample` topic lives:
 
 - Pages: `src/pages/sample/<lesson>.astro`
-- Pattern code the browser runs: `src/topics/sample/patterns/<pattern>.js`, one standalone file per pattern
-- Server code: `src/topics/sample/server.js`, served at `/sample/api/...`
+- Pattern code the browser runs: `src/topics/sample/patterns/<pattern>.ts`, one standalone file per pattern
+- Server code: `src/topics/sample/server.ts`, served at `/sample/api/...`
 - Talk track for presenting it: `src/topics/sample/FACILITATION.md`
 
 ## The question

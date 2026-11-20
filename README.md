@@ -24,7 +24,7 @@ It comes with:
 
 - A site shell built with Astro: a home page of plain topic cards, lesson pages with a chip menu (`src/layouts/`), and a
   house style that works on a phone and in dark mode. Topics and lessons are listed once, in `src/site.json`.
-- Lesson building blocks (`src/lib/ui.js`): measured timelines, consoles, switches, and `showSource` to put the exact
+- Lesson building blocks (`src/lib/ui.ts`): measured timelines, consoles, switches, and `showSource` to put the exact
   pattern code that ran on screen.
 - A placeholder topic, **Sample topic**, showing where everything goes: a Start here page and one lesson page, a
   placeholder endpoint, and TODO notes. Rename or replace it with your own topic. For complete Lunch & Learns built

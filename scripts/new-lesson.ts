@@ -1,17 +1,24 @@
-// Scaffold a lesson: pnpm new-lesson <topic-slug> <lesson-slug> "Lesson title"
+// Scaffold a lesson: pnpm run new-lesson <topic-slug> <lesson-slug> "Lesson title"
 // Adds the lesson to src/site.json (and the topic, if it is new), writes the page skeleton
-// at src/pages/<topic>/<lesson>.astro, and starts src/topics/<topic>/ (TOPIC.md, server.js) for a new topic.
+// at src/pages/<topic>/<lesson>.astro, and starts src/topics/<topic>/ (TOPIC.md, server.ts) for a new topic.
 // A new topic gets a "Start here" lesson first, because every topic opens by defining its terms.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+export type Lesson = { path: string; title?: string; chip?: string; blurb?: string };
+export type Topic = { slug: string; lessons: Lesson[]; [field: string]: unknown };
+export type Catalogue = { topics: Topic[]; [field: string]: unknown };
+
 // Pure: the catalogue with the lesson added. Throws on a bad slug or a lesson that exists.
-export function addLesson(catalogue, { topic, lesson, title }) {
+export function addLesson(
+  catalogue: Catalogue,
+  { topic, lesson, title }: { topic: string; lesson: string; title: string },
+): Catalogue {
   if (!SLUG.test(topic) || !SLUG.test(lesson)) throw new Error("slugs are lower-case words joined by hyphens");
   const path = `/${topic}/${lesson}/`;
-  const topics = catalogue.topics.map((t) => ({ ...t, lessons: [...t.lessons] }));
+  const topics: Topic[] = catalogue.topics.map((t) => ({ ...t, lessons: [...t.lessons] }));
   let entry = topics.find((t) => t.slug === topic);
   if (!entry) {
     entry = {
@@ -28,8 +35,8 @@ export function addLesson(catalogue, { topic, lesson, title }) {
   return { ...catalogue, topics };
 }
 
-const attr = (s) => s.replaceAll("&", "&amp;").replaceAll('"', "&quot;");
-const page = (title, start) => `---
+const attr = (s: string) => s.replaceAll("&", "&amp;").replaceAll('"', "&quot;");
+const page = (title: string, start: boolean) => `---
 import Lesson from '../../layouts/Lesson.astro';
 
 export const prerender = true;
@@ -45,10 +52,10 @@ export const prerender = true;
 </Lesson>
 `;
 
-const server = (slug) => `// ${slug} topic · placeholder server code. Replace it with the real code your patterns call.
+const server = (slug: string) => `// ${slug} topic · placeholder server code. Replace it with the real code your patterns call.
 // It answers everything below /${slug}/api/. Report the server's own time in x-time-ms, so lesson pages can draw
 // measured timelines.
-export async function handle(request) {
+export async function handle(request: Request) {
   const started = Date.now();
   const path = new URL(request.url).pathname;
   if (path !== "/${slug}/api/hello") return Response.json({ error: "not found" }, { status: 404 });
@@ -57,13 +64,13 @@ export async function handle(request) {
 }
 `;
 
-const topicDoc = (slug) => `# TODO: Pattern One vs Pattern Two
+const topicDoc = (slug: string) => `# TODO: Pattern One vs Pattern Two
 
 Where everything for the \`${slug}\` topic lives:
 
 - Pages: \`src/pages/${slug}/<lesson>.astro\`
-- Pattern code the browser runs: \`src/topics/${slug}/patterns/<pattern>.js\`, one standalone file per pattern
-- Server code: \`src/topics/${slug}/server.js\`, served at \`/${slug}/api/...\`
+- Pattern code the browser runs: \`src/topics/${slug}/patterns/<pattern>.ts\`, one standalone file per pattern
+- Server code: \`src/topics/${slug}/server.ts\`, served at \`/${slug}/api/...\`
 - Talk track for presenting it: \`src/topics/${slug}/FACILITATION.md\`
 
 ## The question
@@ -80,30 +87,30 @@ TODO: every term a senior engineer from another field might not know.
 |---|---|---|---|
 `;
 
-function main([topic, lesson, title]) {
+function main([topic, lesson, title]: string[]) {
   if (!topic || !lesson || !title) {
-    console.error('usage: pnpm new-lesson <topic-slug> <lesson-slug> "Lesson title"');
+    console.error('usage: pnpm run new-lesson <topic-slug> <lesson-slug> "Lesson title"');
     process.exit(2);
   }
   const root = new URL("../", import.meta.url);
   const file = new URL("src/site.json", root);
-  const before = JSON.parse(readFileSync(file, "utf8"));
+  const before: Catalogue = JSON.parse(readFileSync(file, "utf8"));
   const isNewTopic = !before.topics.some((t) => t.slug === topic);
   const after = addLesson(before, { topic, lesson, title });
-  const written = [];
-  const write = (path, text) => {
+  const written: string[] = [];
+  const write = (path: string, text: string) => {
     const url = new URL(path, root);
     if (existsSync(url)) return;
     mkdirSync(new URL(".", url), { recursive: true });
     writeFileSync(url, text);
     written.push(path);
   };
-  for (const l of after.topics.find((t) => t.slug === topic).lessons) {
-    write(`src/pages${l.path.slice(0, -1)}.astro`, page(l.title, l.path.endsWith("/start/")));
+  for (const l of after.topics.find((t) => t.slug === topic)!.lessons) {
+    write(`src/pages${l.path.slice(0, -1)}.astro`, page(l.title ?? l.path, l.path.endsWith("/start/")));
   }
   if (isNewTopic) {
     write(`src/topics/${topic}/TOPIC.md`, topicDoc(topic));
-    write(`src/topics/${topic}/server.js`, server(topic));
+    write(`src/topics/${topic}/server.ts`, server(topic));
   }
   writeFileSync(file, `${JSON.stringify(after, null, 2)}\n`);
   console.log(["src/site.json", ...written].map((f) => `wrote ${f}`).join("\n"));

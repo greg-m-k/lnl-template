@@ -1,6 +1,6 @@
-# 8. Syntax highlighting with TanStack Highlight
+# 9. Syntax highlighting with TanStack Highlight
 
-Depends on: 5 (Astro), 7 (Graffiti tokens for the colour theme).
+Depends on: 5 (Astro), 8 (Graffiti tokens for the colour theme).
 
 ## Why
 
@@ -42,7 +42,7 @@ imports the module itself for the run button), so the code on screen is the code
 2. `pnpm add @tanstack/highlight`. Import the core entry and the JavaScript language only.
 3. `src/components/Source.astro` as above. Replace `showSource(pre, url)` in lessons with `<Source code=... />`;
    remove `showSource` from `lib/ui.js`.
-4. Theme: one CSS block mapping `th-*` variables to Graffiti tokens (todo 7) for both schemes. Keep pattern colours
+4. Theme: one CSS block mapping `th-*` variables to Graffiti tokens (todo 8) for both schemes. Keep pattern colours
    (blue/green/purple/orange) out of the code theme so a colour always means one pattern.
 5. Add `patterns/example.js` to the sample topic and a `<Source>` in the sample lesson, so the template shows it.
 6. If pattern files are TypeScript (todo 6), add the TypeScript language module; nothing else.

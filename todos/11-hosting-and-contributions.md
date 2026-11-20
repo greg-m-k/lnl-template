@@ -1,4 +1,4 @@
-# 10. Hosting the site, and taking examples by pull request
+# 11. Hosting the site, and taking examples by pull request
 
 Depends on: 4, 5 (Alchemy + Astro). Uses the scaffold from 5.
 
@@ -6,7 +6,7 @@ Depends on: 4, 5 (Alchemy + Astro). Uses the scaffold from 5.
 
 This repository is a hosted Lunch & Learn site as well as a template. It takes small, free-to-run examples from other
 people by pull request and serves them on the live site. It does not mount or proxy other people's Workers or APIs;
-sites hosted elsewhere appear only as vetted links (todo 9).
+sites hosted elsewhere appear only as vetted links (todo 10).
 
 ## What "small and free" means (the acceptance rules)
 

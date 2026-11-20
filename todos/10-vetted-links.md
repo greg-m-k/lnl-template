@@ -1,11 +1,11 @@
-# 9. Vetted links to other Lunch & Learn sites
+# 10. Vetted links to other Lunch & Learn sites
 
 Depends on: 5 (Astro collections).
 
 ## Why
 
 Replaces the removed "mount a topic from another Worker" design. This site hosts small, free-to-run examples merged
-by pull request (todo 10). Lunch & Learn sites hosted elsewhere are listed as links once someone vets them; their
+by pull request (todo 11). Lunch & Learn sites hosted elsewhere are listed as links once someone vets them; their
 code and APIs are never served from here. The home page already
 credits lnl.sam-peterson.com as the origin of the format; that becomes the first entry.
 
