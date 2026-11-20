@@ -1,0 +1,53 @@
+---
+// Home: a header, then one section of cards per topic, from src/site.json.
+import Base from '../layouts/Base.astro';
+import site from '../site.json';
+
+export const prerender = true;
+---
+
+<Base
+  title={site.title}
+  description="Interactive Lunch & Learn lessons: competing patterns, really running, side by side."
+  mainClass="home"
+>
+  <header>
+    <h1>{site.title}</h1>
+    <p class="lead">{site.intro}</p>
+    <p class="lead">
+      {site.origin.text} <a href={site.origin.url}>{new URL(site.origin.url).host}</a>.
+    </p>
+  </header>
+  {
+    site.topics.map((t) => (
+      <section class="topic" aria-labelledby={`topic-${t.slug}`}>
+        <h2 id={`topic-${t.slug}`}>
+          <span aria-hidden="true">{t.emoji}</span> {t.title}
+        </h2>
+        <p>
+          {t.summary}{' '}
+          {site.repo ? (
+            <span>
+              <a href={`${site.repo}/tree/main/${t.source}`}>The source for this topic is on GitHub</a>.
+            </span>
+          ) : (
+            <span>
+              The source for this topic is in <code>{t.source}</code>.
+            </span>
+          )}
+        </p>
+        <ul class="cards">
+          {t.lessons.map((l) => (
+            <li>
+              <a class="card" href={l.path}>
+                <h3>{l.title}</h3>
+                <p>{l.blurb}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+  <footer class="site" slot="after">Made by <a href={site.author.url}>{site.author.name}</a>.</footer>
+</Base>

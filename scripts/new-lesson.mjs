@@ -1,6 +1,6 @@
 // Scaffold a lesson: pnpm new-lesson <topic-slug> <lesson-slug> "Lesson title"
-// Adds the lesson to public/topics.json (and the topic, if it is new), writes the page skeleton
-// at public/<topic>/<lesson>/index.html, and starts topics/<topic>/TOPIC.md for a new topic.
+// Adds the lesson to src/site.json (and the topic, if it is new), writes the page skeleton
+// at src/pages/<topic>/<lesson>.astro, and starts src/topics/<topic>/ (TOPIC.md, server.js) for a new topic.
 // A new topic gets a "Start here" lesson first, because every topic opens by defining its terms.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -17,7 +17,7 @@ export function addLesson(catalogue, { topic, lesson, title }) {
     entry = {
       slug: topic, emoji: "🧪", title: "TODO: Pattern One vs Pattern Two",
       summary: "TODO: the design question in one or two sentences, and what the lessons measure.",
-      source: `topics/${topic}`,
+      source: `src/topics/${topic}`,
       lessons: lesson === "start" ? [] : [{ path: `/${topic}/start/`, title: "Start here: the problem and the patterns", chip: "Start here",
         blurb: "TODO: what the reader will understand after this page." }],
     };
@@ -28,35 +28,43 @@ export function addLesson(catalogue, { topic, lesson, title }) {
   return { ...catalogue, topics };
 }
 
-const page = (slug, title, start) => `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title} · Lunch & Learn</title>
-<link rel="stylesheet" href="/${slug}/site/styles.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='6' fill='%232563eb'/%3E%3Ccircle cx='23' cy='16' r='6' fill='%2316a34a'/%3E%3C/svg%3E">
-</head>
-<body>
-<main${start ? ' class="prose"' : ""}>
+const attr = (s) => s.replaceAll("&", "&amp;").replaceAll('"', "&quot;");
+const page = (title, start) => `---
+import Lesson from '../../layouts/Lesson.astro';
+
+export const prerender = true;
+---
+
+<Lesson title="${attr(title)}"${start ? " prose" : ""}>
   <h1>${title}</h1>
-  <p class="lead">TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with
-    <code>&lt;strong data-color="..."&gt;</code>), what to try, and a link back to Start here for the terms.</p>
+  <p class="lead">
+    TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with
+    <code>&lt;strong data-color="..."&gt;</code>), what to try, and a link back to Start here for the terms.
+  </p>
   <!-- See AGENTS.md "Lesson anatomy". Complete lessons: https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl. -->
-</main>
-<script type="module">import { lesson } from "/${slug}/site/lib/site.js"; lesson(document.querySelector("main"));</script>
-</body>
-</html>
+</Lesson>
+`;
+
+const server = (slug) => `// ${slug} topic · placeholder server code. Replace it with the real code your patterns call.
+// It answers everything below /${slug}/api/. Report the server's own time in x-time-ms, so lesson pages can draw
+// measured timelines.
+export async function handle(request) {
+  const started = Date.now();
+  const path = new URL(request.url).pathname;
+  if (path !== "/${slug}/api/hello") return Response.json({ error: "not found" }, { status: 404 });
+  return Response.json({ hello: "TODO: replace with your topic's real endpoint" },
+    { headers: { "x-time-ms": String(Date.now() - started), "cache-control": "no-store" } });
+}
 `;
 
 const topicDoc = (slug) => `# TODO: Pattern One vs Pattern Two
 
 Where everything for the \`${slug}\` topic lives:
 
-- Pages: \`public/${slug}/<lesson>/index.html\`
-- Pattern code the browser runs: \`public/${slug}/patterns/<pattern>.js\`, one standalone file per pattern
-- Server code: \`topics/${slug}/api.js\`, registered in \`src/index.js\`
-- Talk track for presenting it: \`topics/${slug}/FACILITATION.md\`
+- Pages: \`src/pages/${slug}/<lesson>.astro\`
+- Pattern code the browser runs: \`src/topics/${slug}/patterns/<pattern>.js\`, one standalone file per pattern
+- Server code: \`src/topics/${slug}/server.js\`, served at \`/${slug}/api/...\`
+- Talk track for presenting it: \`src/topics/${slug}/FACILITATION.md\`
 
 ## The question
 TODO
@@ -78,25 +86,27 @@ function main([topic, lesson, title]) {
     process.exit(2);
   }
   const root = new URL("../", import.meta.url);
-  const file = new URL("public/topics.json", root);
+  const file = new URL("src/site.json", root);
   const before = JSON.parse(readFileSync(file, "utf8"));
   const isNewTopic = !before.topics.some((t) => t.slug === topic);
   const after = addLesson(before, { topic, lesson, title });
   const written = [];
+  const write = (path, text) => {
+    const url = new URL(path, root);
+    if (existsSync(url)) return;
+    mkdirSync(new URL(".", url), { recursive: true });
+    writeFileSync(url, text);
+    written.push(path);
+  };
   for (const l of after.topics.find((t) => t.slug === topic).lessons) {
-    const dir = new URL(`public${l.path}`, root);
-    if (existsSync(new URL("index.html", dir))) continue;
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(new URL("index.html", dir), page(topic, l.title, l.path.endsWith("/start/")));
-    written.push(`public${l.path}index.html`);
+    write(`src/pages${l.path.slice(0, -1)}.astro`, page(l.title, l.path.endsWith("/start/")));
   }
   if (isNewTopic) {
-    mkdirSync(new URL(`topics/${topic}/`, root), { recursive: true });
-    writeFileSync(new URL(`topics/${topic}/TOPIC.md`, root), topicDoc(topic));
-    written.push(`topics/${topic}/TOPIC.md`);
+    write(`src/topics/${topic}/TOPIC.md`, topicDoc(topic));
+    write(`src/topics/${topic}/server.js`, server(topic));
   }
   writeFileSync(file, `${JSON.stringify(after, null, 2)}\n`);
-  console.log(["public/topics.json", ...written].map((f) => `wrote ${f}`).join("\n"));
+  console.log(["src/site.json", ...written].map((f) => `wrote ${f}`).join("\n"));
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main(process.argv.slice(2));

@@ -3,10 +3,10 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { addLesson } from "../scripts/new-lesson.mjs";
-import { handle } from "../topics/sample/api.js";
+import { handle } from "../src/topics/sample/server.js";
 
 const root = new URL("../", import.meta.url);
-const catalogue = JSON.parse(readFileSync(new URL("public/topics.json", root), "utf8"));
+const catalogue = JSON.parse(readFileSync(new URL("src/site.json", root), "utf8"));
 
 test("catalogue: slugs are unique and every topic opens with Start here", () => {
   const slugs = catalogue.topics.map((t) => t.slug);
@@ -14,12 +14,12 @@ test("catalogue: slugs are unique and every topic opens with Start here", () => 
   for (const t of catalogue.topics) assert.equal(t.lessons[0].path, `/${t.slug}/start/`, t.slug);
 });
 
-test("catalogue: every lesson has a page that draws the site frame, and every topic its source folder", () => {
+test("catalogue: every lesson has a page in the Lesson layout, and every topic its source folder", () => {
   for (const t of catalogue.topics) {
     assert.ok(existsSync(new URL(t.source, root)), t.source);
     for (const l of t.lessons) {
-      const html = readFileSync(new URL(`public${l.path}index.html`, root), "utf8");
-      assert.ok(new RegExp(`import \\{[^}]*lesson[^}]*\\} from "/${t.slug}/site/lib/site\\.js"`).test(html), l.path);
+      const page = readFileSync(new URL(`src/pages${l.path.slice(0, -1)}.astro`, root), "utf8");
+      assert.match(page, /import Lesson from ['"][./]*layouts\/Lesson\.astro['"]/, l.path);
     }
   }
 });
@@ -43,7 +43,7 @@ test("scaffold: refuses a duplicate lesson and a bad slug", () => {
 test("sample topic: ships as a placeholder, with no example content to delete", () => {
   assert.deepEqual(catalogue.topics.map((t) => t.slug), ["sample"]);
   assert.equal(catalogue.topics[0].title, "Sample topic");
-  assert.ok(!existsSync(new URL("public/requests", root)) && !existsSync(new URL("topics/requests", root)));
+  assert.ok(!existsSync(new URL("src/pages/requests", root)) && !existsSync(new URL("src/topics/requests", root)));
 });
 
 test("sample api: answers below its topic and reports its own time", async () => {
@@ -113,13 +113,5 @@ test("renovate: held a few days, weekly, beta packages pinned in a group of thei
   assert.equal(own.rangeStrategy, "pin");
   for (const name of ["alchemy", "@alchemy.run/cloudflare", "@drop-in/graffiti"]) {
     assert.ok(own.matchPackageNames.some((p) => p === name || (p.startsWith("/") && new RegExp(p.slice(1, -1)).test(name))), name);
-  }
-});
-
-test("every lesson page loads the frame and calls its API below its own topic", () => {
-  for (const t of catalogue.topics) for (const l of t.lessons) {
-    const html = readFileSync(new URL(`public${l.path}index.html`, root), "utf8");
-    const paths = [...html.matchAll(/(?:href=|src=|from )["'`](\/[^"'`$]*)/g)].map((m) => m[1]).filter((p) => p !== "/");
-    for (const p of paths) assert.ok(p.startsWith(`/${t.slug}/`), `${l.path} uses ${p}`);
   }
 });

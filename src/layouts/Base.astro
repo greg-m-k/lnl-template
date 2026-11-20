@@ -1,0 +1,28 @@
+---
+// The document every page shares: head, the house stylesheet, and the page's <main>.
+import '../styles/site.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  mainClass?: string;
+}
+const { title, description, mainClass } = Astro.props;
+const icon =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='6' fill='%232563eb'/%3E%3Ccircle cx='23' cy='16' r='6' fill='%2316a34a'/%3E%3C/svg%3E";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href={icon} />
+  </head>
+  <body>
+    <main class={mainClass}><slot /></main>
+    <slot name="after" />
+  </body>
+</html>

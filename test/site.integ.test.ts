@@ -1,6 +1,5 @@
 // Boots the real stack (alchemy.run.ts) locally with Alchemy's test harness and drives it over HTTP.
 // dev: true runs it in workerd with local simulators, so no Cloudflare account is touched.
-import { readFileSync } from 'node:fs';
 import * as Cloudflare from '@alchemy.run/cloudflare';
 import * as Test from '@alchemy.run/test/Vitest';
 import { expect } from '@effect/vitest';
@@ -8,6 +7,7 @@ import * as Alchemy from 'alchemy';
 import * as Effect from 'effect/Effect';
 import * as HttpClient from 'effect/http/HttpClient';
 import Stack from '../alchemy.run.ts';
+import site from '../src/site.json';
 
 const { test, beforeAll, afterAll, deploy, destroy } = Test.make({
   providers: Cloudflare.providers(),
@@ -19,34 +19,44 @@ const stack = beforeAll(deploy(Stack), { timeout: 300_000 });
 afterAll(destroy(Stack));
 
 const base = Effect.map(stack, ({ url }) => url.replace(/\/+$/, ''));
+const html = (path: string) =>
+  Effect.gen(function* () {
+    const res = yield* Test.getWhenReady(`${yield* base}${path}`);
+    expect(res.status, path).toBe(200);
+    expect(res.headers['content-type'], path).toContain('text/html');
+    // Astro's dev server tags every element with data-astro-source-* attributes; the pages are checked without them.
+    return (yield* res.text).replace(/ data-astro-source-[a-z]+="[^"]*"/g, '');
+  });
+const lessons = site.topics.flatMap((t) => t.lessons.map((l) => ({ ...l, topic: t })));
+const credit = `Made by <a href="${site.author.url}">${site.author.name}</a>.`;
 
 test(
-  'serves every page, the site frame and the topic API below the topic path',
+  'home: one section per topic, one card per lesson, credits the origin and the author',
   Effect.gen(function* () {
-    const url = yield* base;
-    const expected: Array<[string, string]> = [
-      ['/', 'text/html'],
-      ['/sample/start/', 'text/html'],
-      ['/sample/lesson/', 'text/html'],
-      ['/sample/site/styles.css', 'text/css'],
-      ['/sample/site/lib/site.js', 'javascript'],
-      ['/sample/api/hello', 'application/json'],
-    ];
-    for (const [path, type] of expected) {
-      const res = yield* Test.getWhenReady(`${url}${path}`);
-      expect(res.status, path).toBe(200);
-      expect(res.headers['content-type'], path).toContain(type);
-    }
+    const page = yield* html('/');
+    expect(page.match(/<section class="topic"/g)).toHaveLength(site.topics.length);
+    expect(page.match(/<a class="card"/g)).toHaveLength(lessons.length);
+    expect(page).toContain(`href="${site.origin.url}"`);
+    expect(page).toContain(credit);
   }),
   { timeout: 120_000 },
 );
 
 test(
-  'the site frame below a topic is the one copy in public/',
+  'every lesson: chips for its topic with itself current, the next lesson, and the footer',
   Effect.gen(function* () {
-    const url = yield* base;
-    const res = yield* Test.getWhenReady(`${url}/sample/site/topics.json`);
-    expect(yield* res.text).toBe(readFileSync(new URL('../public/topics.json', import.meta.url), 'utf8'));
+    for (const [i, l] of lessons.entries()) {
+      const page = yield* html(l.path);
+      expect(page, l.path).toMatch(
+        new RegExp(`href="${l.path}"[^>]*aria-current="page"[^>]*>\\s*${l.chip ?? l.title}\\s*<`),
+      );
+      expect(page.match(/<nav class="chips"[\s\S]*?<\/nav>/)?.[0].match(/<a /g), l.path).toHaveLength(
+        l.topic.lessons.length + 1,
+      );
+      const next = lessons[i + 1];
+      if (next && next.topic === l.topic) expect(page, l.path).toContain(`href="${next.path}"`);
+      expect(page, l.path).toContain(credit);
+    }
   }),
   { timeout: 120_000 },
 );
@@ -54,12 +64,8 @@ test(
 test(
   'served pages use plain statements (see AGENTS.md "Writing")',
   Effect.gen(function* () {
-    const url = yield* base;
-    const site = JSON.parse(readFileSync(new URL('../public/topics.json', import.meta.url), 'utf8'));
-    const paths = ['/', ...site.topics.flatMap((t: { lessons: { path: string }[] }) => t.lessons.map((l) => l.path))];
-    for (const path of paths) {
-      const html = yield* (yield* Test.getWhenReady(`${url}${path}`)).text;
-      const text = html.replace(/<script[\s\S]*?<\/script>|<!--[\s\S]*?-->|<[^>]+>/g, ' ');
+    for (const path of ['/', ...lessons.map((l) => l.path)]) {
+      const text = (yield* html(path)).replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->|<[^>]+>/g, ' ');
       expect(text, path).not.toMatch(/\bNeither\b|, not (a|an|the) |is the lesson|slide's word/);
     }
   }),
@@ -67,11 +73,13 @@ test(
 );
 
 test(
-  'an unknown topic has no API',
+  "a topic's API answers below its path; an unknown topic has none",
   Effect.gen(function* () {
     const url = yield* base;
-    const res = yield* HttpClient.get(`${url}/nope/api/x`);
-    expect(res.status).toBe(404);
+    const ok = yield* Test.getWhenReady(`${url}/sample/api/hello`);
+    expect(ok.status).toBe(200);
+    expect(ok.headers['x-time-ms']).toBeDefined();
+    expect((yield* HttpClient.get(`${url}/nope/api/x`)).status).toBe(404);
   }),
   { timeout: 120_000 },
 );

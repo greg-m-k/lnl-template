@@ -2,10 +2,10 @@
 
 Where everything for the `sample` topic lives:
 
-- Pages: `public/sample/<lesson>/index.html`
-- Pattern code the browser runs: `public/sample/patterns/<pattern>.js`, one standalone file per pattern
-- Server code: `topics/sample/api.js`, registered in `src/index.js`
-- Talk track for presenting it: `topics/sample/FACILITATION.md`
+- Pages: `src/pages/sample/<lesson>.astro`
+- Pattern code the browser runs: `src/topics/sample/patterns/<pattern>.js`, one standalone file per pattern
+- Server code: `src/topics/sample/server.js`, served at `/sample/api/...`
+- Talk track for presenting it: `src/topics/sample/FACILITATION.md`
 
 ## The question
 TODO

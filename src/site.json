@@ -12,7 +12,7 @@
       "emoji": "🧪",
       "title": "Sample topic",
       "summary": "TODO: the design question in one or two sentences, and what the lessons measure.",
-      "source": "topics/sample",
+      "source": "src/topics/sample",
       "lessons": [
         {
           "path": "/sample/start/",
