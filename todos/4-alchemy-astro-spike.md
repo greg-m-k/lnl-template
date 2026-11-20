@@ -15,6 +15,7 @@ init command), so this followed Alchemy's documented route for an existing proje
 - `pnpm run dev` is `alchemy dev`. `.gitignore` adds `.alchemy/`, `.astro/`, `dist/`. CI sets `DO_NOT_TRACK=1`.
 
 Checked, with no `CLOUDFLARE_*` variables and `DO_NOT_TRACK=1`:
+
 - Starts with no prompt and no login; the plan shows `Site` and its `SESSION` KV namespace created `(local)`.
 - Port 8800 honoured. `/`, `/sample/start/`, `/sample/lesson/`, `/sample/site/{styles.css,lib/site.js,topics.json}`
   and `/sample/api/hello` answer 200 with the right content types; `/nope/api/x` is 404.
@@ -71,7 +72,9 @@ Alchemy supports that, with conditions. Prove it on our exact stack (Node 26, pn
 2. `pnpm add -D alchemy effect @effect/platform-node @alchemy.run/cloudflare @alchemy.run/frontend-frameworks`.
 3. `alchemy.run.ts`:
    ```ts
-   export default Alchemy.Stack("lnl", {
+   export default Alchemy.Stack(
+     'lnl',
+     {
        providers: Cloudflare.providers(),
        // State lives on this machine in .alchemy/ (gitignored), so `pnpm dev` needs no Cloudflare account.
        // Hosting your own Lunch & Learn from this template? Replace with `Cloudflare.state()` to keep deploy
@@ -79,10 +82,11 @@ Alchemy supports that, with conditions. Prove it on our exact stack (Node 26, pn
        state: Alchemy.localState(),
      },
      Effect.gen(function* () {
-       const db = yield* Cloudflare.D1.Database("Scratch");                      // proves a binding works locally
-       const site = yield* Cloudflare.Website.Astro("Site", { env: { DB: db } });
+       const db = yield* Cloudflare.D1.Database('Scratch'); // proves a binding works locally
+       const site = yield* Cloudflare.Website.Astro('Site', { env: { DB: db } });
        return { url: site.url };
-     }));
+     }),
+   );
    ```
 4. One prerendered page, one on-demand API route `src/pages/sample/api/[...path].ts` that writes and reads D1.
 5. Logged out: `HOME=$(mktemp -d)`, `env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID`, then `pnpm exec alchemy dev`.

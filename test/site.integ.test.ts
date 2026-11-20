@@ -53,9 +53,10 @@ test(
       expect(page, l.path).toMatch(
         new RegExp(`href="${l.path}"[^>]*aria-current="page"[^>]*>\\s*${l.chip ?? l.title}\\s*<`),
       );
-      expect(page.match(/<nav class="chips"[\s\S]*?<\/nav>/)?.[0].match(/<a /g), l.path).toHaveLength(
-        l.topic.lessons.length + 1,
-      );
+      expect(
+        page.match(/<nav class="chips"[\s\S]*?<\/nav>/)?.[0].match(/<a /g),
+        l.path,
+      ).toHaveLength(l.topic.lessons.length + 1);
       const next = lessons[i + 1];
       if (next && next.topic === l.topic) expect(page, l.path).toContain(`href="${next.path}"`);
       expect(page, l.path).toContain(credit);
@@ -68,7 +69,10 @@ test(
   'served pages use plain statements (see AGENTS.md "Writing")',
   Effect.gen(function* () {
     for (const path of ['/', ...lessons.map((l) => l.path)]) {
-      const text = (yield* html(path)).replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->|<[^>]+>/g, ' ');
+      const text = (yield* html(path)).replace(
+        /<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->|<[^>]+>/g,
+        ' ',
+      );
       expect(text, path).not.toMatch(/\bNeither\b|, not (a|an|the) |is the lesson|slide's word/);
     }
   }),

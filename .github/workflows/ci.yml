@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      DO_NOT_TRACK: "1" # Alchemy's CLI sends usage telemetry unless this is set
+      DO_NOT_TRACK: '1' # Alchemy's CLI sends usage telemetry unless this is set
     steps:
       - uses: actions/checkout@v7
       # Installs the pnpm and Node versions from package.json's devEngines, then pnpm install --frozen-lockfile.
@@ -27,5 +27,6 @@ jobs:
         with:
           cache: true
           require-lockfile: true
+      - run: pnpm run lint
       - run: pnpm run check
       - run: pnpm run test

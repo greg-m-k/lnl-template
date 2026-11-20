@@ -6,14 +6,22 @@
 import { playwright } from '@vitest/browser-playwright';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getViteConfig } from 'astro/config';
+import { isRunnableDevEnvironment } from 'vite';
 import type { BrowserCommand } from 'vitest/node';
 
 // Runs in Node: renders the page at `path` (src/pages/...) with Astro's Container API and returns its HTML.
+type Page = Parameters<AstroContainer['renderToString']>[0];
+
 const renderPage: BrowserCommand<[path: string]> = async ({ project }, path) => {
   const file = `/src/pages${path === '/' ? '/index' : path.replace(/\/$/, '')}.astro`;
-  const page = await project.vite.ssrLoadModule(file);
+  // Vite's SSR environment loads the page; its module runner returns the page module typed.
+  const ssr = project.vite.environments.ssr;
+  if (!isRunnableDevEnvironment(ssr)) throw new Error('Vite SSR environment cannot run modules');
+  const page = await ssr.runner.import<{ default: Page }>(file);
   const container = await AstroContainer.create();
-  return container.renderToString(page.default, { request: new Request(`http://localhost${path}`) });
+  return container.renderToString(page.default, {
+    request: new Request(`http://localhost${path}`),
+  });
 };
 
 export default getViteConfig({

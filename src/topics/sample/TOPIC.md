@@ -8,14 +8,18 @@ Where everything for the `sample` topic lives:
 - Talk track for presenting it: `src/topics/sample/FACILITATION.md`
 
 ## The question
+
 TODO
 
 ## The patterns
+
 TODO: one paragraph each: what it does, what you get, what it costs.
 
 ## Glossary
+
 TODO: every term a senior engineer from another field might not know.
 
 ## Lessons and the claim each one proves
+
 | Lesson | Claim | The switch or slider that shows it | What is measured |
-|---|---|---|---|
+| ------ | ----- | ---------------------------------- | ---------------- |

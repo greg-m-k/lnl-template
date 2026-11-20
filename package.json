@@ -2,29 +2,23 @@
   "name": "lnl-template",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=26.8.0"
-  },
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "version": "^26.8.0",
-      "onFail": "download"
-    },
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^12.4.0",
-      "onFail": "download"
-    }
-  },
   "scripts": {
     "dev": "alchemy dev",
     "test": "vitest run",
     "check": "astro check",
+    "lint": "oxlint && oxfmt --check",
+    "format": "oxfmt",
     "new-lesson": "node scripts/new-lesson.ts",
     "login": "alchemy profile edit --add Cloudflare",
     "deploy": "alchemy deploy",
     "destroy": "alchemy destroy"
+  },
+  "dependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.87",
+    "@effect/platform-bun": "^4.1.4",
+    "@effect/platform-node": "^4.1.4",
+    "alchemy": "2.0.0-beta.87",
+    "effect": "^4.1.4"
   },
   "devDependencies": {
     "@alchemy.run/frontend-frameworks": "2.0.0-beta.87",
@@ -34,14 +28,26 @@
     "@types/node": "^26.6.6",
     "@vitest/browser-playwright": "^5.1.1",
     "astro": "^7.4.13",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "oxlint-tsgolint": "^7.0.2007",
     "typescript": "^6.0.3",
+    "vite": "8.3.8",
     "vitest": "^5.1.1"
   },
-  "dependencies": {
-    "@alchemy.run/cloudflare": "2.0.0-beta.87",
-    "@effect/platform-bun": "^4.1.4",
-    "@effect/platform-node": "^4.1.4",
-    "alchemy": "2.0.0-beta.87",
-    "effect": "^4.1.4"
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.4.0",
+      "onFail": "download"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "^26.8.0",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=26.8.0"
   }
 }

@@ -126,7 +126,7 @@ First make it work, then make it right.
 - **Commit often**, small and ordered. Each message says why, what changed and how you proved it.
 - **Deploying is outward-facing.** Never deploy, publish or push to a shared branch without the human's go-ahead.
 
-If the ub tools are installed (crapper, dryer, mutator), run them on the topic you changed. Treat duplication *between*
+If the ub tools are installed (crapper, dryer, mutator), run them on the topic you changed. Treat duplication _between_
 patterns as intended; only de-duplicate inside one file.
 
 ## Adding a topic, step by step
@@ -152,6 +152,8 @@ by hand in the Cloudflare dashboard.
 
 ```
 pnpm install                      pnpm fetches the Node and pnpm versions set in package.json
+pnpm run lint                     type-aware oxlint, and oxfmt's format check
+pnpm run format                   format every file with oxfmt
 pnpm run check                    type-check every .ts and .astro file
 pnpm run test                     node checks, the site booted by Alchemy's harness, page code in Chrome
 pnpm run dev                      the site and APIs at http://localhost:8800

@@ -43,7 +43,7 @@ so local scripts run on that Node whatever is installed globally. `pnpm deploy` 
 
 ```yaml
 # pnpm-workspace.yaml (pnpm settings live here since pnpm 10)
-allowBuilds:            # confirm the key name for the pnpm version in use; older: onlyBuiltDependencies
+allowBuilds: # confirm the key name for the pnpm version in use; older: onlyBuiltDependencies
   workerd: true
   esbuild: true
 ```

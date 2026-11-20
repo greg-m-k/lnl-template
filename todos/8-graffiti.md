@@ -31,21 +31,21 @@ Docs: https://graffiti-ui.com/ · Source: https://github.com/stolinski/graffiti 
 
 ## Mapping
 
-| Today (`styles.css`) | Graffiti |
-|---|---|
-| `--bg`, `--surface`, `--text`, `--muted`, `--faint`, `--border` | `--bg`, `--bg-1..`, `--fg`, `--fg-6`, `--fg-4`, `--border-1` |
-| Pattern colours `--blue/green/purple/orange` and `-bg` | Graffiti hue tokens and their `-1` / `-2` steps |
-| `[data-color]` → `--c`, `--c-bg` | keep this one rule, pointing at Graffiti hues |
-| `--fail`, `--wait` | `--error`, `--warning` |
-| Home cards | `.layout-card` > `a.card.linked` |
-| Lesson chip row | `.cluster` of `.chip` (current: `.selected` + `aria-current`) |
-| `.cols` > `.panel` | `.grid` / `.layout-three-col` > `.card` |
-| Switch buttons (`aria-pressed`) | `.chip` with `aria-pressed`, or `.toggle` |
-| Status line ok/err/wait | `.tag.success` / `.error` / `.warning` |
-| Insight callout | `.callout` |
-| `.prose` Start here | `.layout-readable` |
-| Timeline (`.lane`, `.track`, `.seg`, `.axis`) | **no equivalent**: keep, in Graffiti tokens |
-| Console pane | `pre` (or `.log-card`) |
+| Today (`styles.css`)                                            | Graffiti                                                      |
+| --------------------------------------------------------------- | ------------------------------------------------------------- |
+| `--bg`, `--surface`, `--text`, `--muted`, `--faint`, `--border` | `--bg`, `--bg-1..`, `--fg`, `--fg-6`, `--fg-4`, `--border-1`  |
+| Pattern colours `--blue/green/purple/orange` and `-bg`          | Graffiti hue tokens and their `-1` / `-2` steps               |
+| `[data-color]` → `--c`, `--c-bg`                                | keep this one rule, pointing at Graffiti hues                 |
+| `--fail`, `--wait`                                              | `--error`, `--warning`                                        |
+| Home cards                                                      | `.layout-card` > `a.card.linked`                              |
+| Lesson chip row                                                 | `.cluster` of `.chip` (current: `.selected` + `aria-current`) |
+| `.cols` > `.panel`                                              | `.grid` / `.layout-three-col` > `.card`                       |
+| Switch buttons (`aria-pressed`)                                 | `.chip` with `aria-pressed`, or `.toggle`                     |
+| Status line ok/err/wait                                         | `.tag.success` / `.error` / `.warning`                        |
+| Insight callout                                                 | `.callout`                                                    |
+| `.prose` Start here                                             | `.layout-readable`                                            |
+| Timeline (`.lane`, `.track`, `.seg`, `.axis`)                   | **no equivalent**: keep, in Graffiti tokens                   |
+| Console pane                                                    | `pre` (or `.log-card`)                                        |
 
 ## Steps
 
