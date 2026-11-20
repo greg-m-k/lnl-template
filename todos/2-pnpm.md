@@ -15,7 +15,8 @@ Depends on: 1 (Node 26).
 - Corepack no longer ships with Node (from 25), so a fresh clone needs pnpm installed first:
   `npm i -g pnpm` (or `npx pnpm install` once). This is one line in the getting-started docs.
 - Install scripts must be allowed explicitly for the packages that need them (wrangler's `workerd`, `esbuild`;
-  playwright-core does not download browsers, so it needs nothing).
+  playwright-core does not download browsers, so it needs nothing). npm 11 now holds these back too
+  (`npm warn install-scripts`, seen during todo 1), so this cost exists either way.
 
 ## Target
 

@@ -35,7 +35,7 @@ It comes with:
 
 ## Run it on your laptop
 
-Every topic runs locally from a fresh clone. You need Node 22 or newer, and nothing else: no Cloudflare account.
+Every topic runs locally from a fresh clone. You need Node 26 (the version is set in `package.json`), and nothing else: no Cloudflare account.
 
 ```
 npm install

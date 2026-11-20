@@ -1,7 +1,7 @@
 // The catalogue, the files it points at, the scaffold and the sample topic's server.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { addLesson } from "../scripts/new-lesson.mjs";
 import { handle } from "../topics/sample/api.js";
 import worker from "../src/index.js";
@@ -64,6 +64,22 @@ test("site worker: a topic owns everything below /<slug>/: its API, the site fra
   assert.equal(await (await get("/sample/site/styles.css")).text(), "asset /styles.css");
   assert.equal(await (await get("/sample/site/lib/ui.js")).text(), "asset /lib/ui.js");
   assert.equal(await (await get("/sample/site/topics.json")).text(), "asset /topics.json");
+});
+
+// The Node version is declared once, in package.json; workflows read it from there.
+test("node: package.json declares the version, and every workflow takes it from package.json", () => {
+  const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
+  assert.match(pkg.engines?.node ?? "", /^>=26\./, "engines.node");
+  assert.equal(pkg.devEngines?.runtime?.name, "node");
+  assert.match(pkg.devEngines?.runtime?.version ?? "", /^\^26\./, "devEngines.runtime.version");
+  const dir = new URL(".github/workflows/", root);
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".yml"))) {
+    const yml = readFileSync(new URL(file, dir), "utf8");
+    assert.doesNotMatch(yml, /^\s*node-version:/m, `${file} names a Node version itself`);
+    const setups = yml.match(/uses: actions\/setup-node@\S+\n(?:\s+with:\n(?:\s{8,}.*\n)*)?/g) ?? [];
+    assert.equal(setups.length, yml.split("uses: actions/setup-node@").length - 1, `${file}: every setup-node step was read`);
+    for (const step of setups) assert.match(step, /node-version-file: package\.json/, `${file}: ${step.trim()}`);
+  }
 });
 
 test("every lesson page loads the frame and calls its API below its own topic", () => {
