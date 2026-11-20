@@ -1,4 +1,4 @@
-// Scaffold a lesson: npm run new-lesson -- <topic-slug> <lesson-slug> "Lesson title"
+// Scaffold a lesson: pnpm new-lesson <topic-slug> <lesson-slug> "Lesson title"
 // Adds the lesson to public/topics.json (and the topic, if it is new), writes the page skeleton
 // at public/<topic>/<lesson>/index.html, and starts topics/<topic>/TOPIC.md for a new topic.
 // A new topic gets a "Start here" lesson first, because every topic opens by defining its terms.
@@ -74,7 +74,7 @@ TODO: every term a senior engineer from another field might not know.
 
 function main([topic, lesson, title]) {
   if (!topic || !lesson || !title) {
-    console.error('usage: npm run new-lesson -- <topic-slug> <lesson-slug> "Lesson title"');
+    console.error('usage: pnpm new-lesson <topic-slug> <lesson-slug> "Lesson title"');
     process.exit(2);
   }
   const root = new URL("../", import.meta.url);

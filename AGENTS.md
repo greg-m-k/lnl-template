@@ -21,7 +21,7 @@ coding agents and for the senior engineers who direct them.
   lesson shows that exact file (`showSource`). Duplicated plumbing between patterns is fine and expected.
   Never extract the pattern under comparison into a shared helper.
 - **Runs locally from a fresh clone. Always.** Anyone who downloads the repository must be able to run every topic on
-  their own laptop with `npm install` and `npm run dev`: no Cloudflare account, login, API token or remote resource.
+  their own laptop with `pnpm install` and `pnpm dev`: no Cloudflare account, login, API token or remote resource.
   Use only what `wrangler dev` runs locally (Workers, static assets, D1, Queues, Durable Objects, service bindings).
   Never add something that only works deployed (Workers AI, Vectorize, Browser Rendering and the like) unless the topic
   also has a local path. Deploying is also required, but only so the topic has a live page on the LnL site; it is never
@@ -40,7 +40,7 @@ to this Worker:
 - The site frame: `/<topic>/site/styles.css`, `/<topic>/site/lib/...` and `/<topic>/site/topics.json`. These are
   the files in `public/`, served below each topic by `src/index.js`.
 
-A lesson page never links `/styles.css`, `/lib/...` or `/api/...` directly. `npm run new-lesson` writes the right
+A lesson page never links `/styles.css`, `/lib/...` or `/api/...` directly. `pnpm new-lesson` writes the right
 paths, and the tests check them.
 
 ```
@@ -56,9 +56,9 @@ topics/<topic>/patterns/<pattern>/    A topic that needs its own Workers puts ea
 topics/<topic>/TOPIC.md               The question, the patterns, the glossary, and the claim each lesson proves.
 topics/<topic>/FACILITATION.md        The talk track for presenting the topic live.
 src/index.js                          The site Worker: /<topic>/api/... to the topic, /<topic>/site/... to the frame.
-scripts/new-lesson.mjs                Scaffold: npm run new-lesson -- <topic> <lesson> "Title".
-test/site.test.mjs                    Catalogue, scaffold and server tests (npm test).
-test/ui.mjs                           Browser walkthrough of every page (npm run ui, needs npm run dev).
+scripts/new-lesson.mjs                Scaffold: pnpm new-lesson <topic> <lesson> "Title".
+test/site.test.mjs                    Catalogue, scaffold and server tests (pnpm test).
+test/ui.mjs                           Browser walkthrough of every page (pnpm ui, needs pnpm dev).
 .claude/agents/                       Subagents for each stage of building and presenting a topic.
 ```
 
@@ -133,31 +133,35 @@ patterns as intended; only de-duplicate inside one file.
 ## Adding a topic, step by step
 
 1. `topic-designer` agent: turn the argument into `topics/<slug>/TOPIC.md` (question, patterns, glossary, claims table).
-2. `npm run new-lesson -- <slug> <lesson> "Title"` for each lesson in the claims table. The first call also creates
+2. `pnpm new-lesson <slug> <lesson> "Title"` for each lesson in the claims table. The first call also creates
    the topic, its Start here page and `TOPIC.md` if it does not exist.
 3. Fill in the topic's `title`, `emoji`, `summary` and each lesson's `blurb` in `public/topics.json`.
 4. `pattern-builder` agent, once per pattern: the real pattern code and any server code, test first.
 5. Write each lesson page to the anatomy above. For complete lessons, see https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl.
 6. `lesson-reviewer` agent: review every page as a senior engineer new to the domain. Fix what it finds.
 7. `session-facilitator` agent: write `topics/<slug>/FACILITATION.md`.
-8. `npm test`, `npm run dev`, `npm run ui`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
+8. `pnpm test`, `pnpm dev`, `pnpm ui`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
    checks, and on a repository connected to Cloudflare Workers Builds a push to `main` deploys. Open a pull request for
    review; its preview URL is the place to try the topic before it goes live.
 
 Anything a topic needs from Cloudflare (D1, Queues, Durable Objects, service bindings) is declared in `wrangler.jsonc`
 and committed, so every deploy path uses the same setup. Create a database or queue once with wrangler
-(`npx wrangler d1 create <name>`, `npx wrangler queues create <name>`) and commit the id it prints into `wrangler.jsonc`;
+(`pnpm run d1:create <name>`, `pnpm run queues:create <name>`) and commit the id it prints into `wrangler.jsonc`;
 do not configure bindings by hand in the dashboard, where the next deploy would overwrite them.
 
 ## Commands
 
 ```
-npm install
-npm test                 unit tests: catalogue, scaffold, topic servers
-npm run dev              the site and APIs at http://localhost:8800
-npm run ui               browser walkthrough against BASE (default http://localhost:8800)
-npm run new-lesson -- <topic> <lesson> "Title"
-npm run deploy           wrangler deploy (ask first)
+pnpm install                      pnpm fetches the Node and pnpm versions set in package.json
+pnpm run test                     unit tests: catalogue, scaffold, topic servers
+pnpm run dev                      the site and APIs at http://localhost:8800
+pnpm run ui                       browser walkthrough against BASE (default http://localhost:8800)
+pnpm run new-lesson <topic> <lesson> "Title"
+pnpm run d1:create <name>         create a D1 database once; commit the id it prints into wrangler.jsonc
+pnpm run queues:create <name>     create a queue once
+pnpm run login                    log wrangler in to Cloudflare (only needed to deploy)
+pnpm run deploy                   deploy (ask first)
+pnpm run deploy:preview           upload a preview version without deploying it
 ```
 
 ## Glossary of this kit

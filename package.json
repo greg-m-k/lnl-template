@@ -10,6 +10,11 @@
       "name": "node",
       "version": "^26.8.0",
       "onFail": "download"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.4.0",
+      "onFail": "download"
     }
   },
   "scripts": {
@@ -17,7 +22,11 @@
     "test": "node --test test/*.test.mjs",
     "ui": "node --test test/ui.mjs",
     "new-lesson": "node scripts/new-lesson.mjs",
-    "deploy": "wrangler deploy"
+    "login": "wrangler login",
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler versions upload",
+    "d1:create": "wrangler d1 create",
+    "queues:create": "wrangler queues create"
   },
   "devDependencies": {
     "playwright-core": "^1.65.1",

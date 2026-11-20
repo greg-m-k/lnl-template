@@ -75,10 +75,38 @@ test("node: package.json declares the version, and every workflow takes it from 
   const dir = new URL(".github/workflows/", root);
   for (const file of readdirSync(dir).filter((f) => f.endsWith(".yml"))) {
     const yml = readFileSync(new URL(file, dir), "utf8");
-    assert.doesNotMatch(yml, /^\s*node-version:/m, `${file} names a Node version itself`);
-    const setups = yml.match(/uses: actions\/setup-node@\S+\n(?:\s+with:\n(?:\s{8,}.*\n)*)?/g) ?? [];
-    assert.equal(setups.length, yml.split("uses: actions/setup-node@").length - 1, `${file}: every setup-node step was read`);
-    for (const step of setups) assert.match(step, /node-version-file: package\.json/, `${file}: ${step.trim()}`);
+    // pnpm/setup installs Node from devEngines.runtime and pnpm from devEngines.packageManager when given neither.
+    assert.doesNotMatch(yml, /^\s*(node-version|node-version-file|runtime|version):/m, `${file} names a version itself`);
+    assert.doesNotMatch(yml, /actions\/setup-node@/, `${file}: pnpm/setup installs Node`);
+    assert.match(yml, /uses: pnpm\/setup@v3/, `${file}: sets up pnpm and Node`);
+  }
+});
+
+test("pnpm: package.json pins it, the lockfile is pnpm's, and no workflow calls npm or npx", () => {
+  const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
+  assert.equal(pkg.devEngines?.packageManager?.name, "pnpm");
+  assert.match(pkg.devEngines?.packageManager?.version ?? "", /^\^12\./, "devEngines.packageManager.version");
+  assert.equal(pkg.packageManager, undefined, "one source: devEngines.packageManager only");
+  assert.ok(existsSync(new URL("pnpm-lock.yaml", root)), "pnpm-lock.yaml");
+  assert.ok(!existsSync(new URL("package-lock.json", root)), "no package-lock.json");
+  const dir = new URL(".github/workflows/", root);
+  for (const file of readdirSync(dir).filter((f) => f.endsWith(".yml"))) {
+    const yml = readFileSync(new URL(file, dir), "utf8");
+    assert.doesNotMatch(yml, /\bnpm (ci|install|test|run)\b|\bnpx\b|cache: npm/, file);
+  }
+});
+
+// Every command a person or CI runs is a package.json script, so `pnpm run` lists all of them.
+test("scripts: workflows and docs run package.json scripts, never a tool directly", () => {
+  const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
+  for (const name of ["dev", "test", "ui", "new-lesson", "deploy", "deploy:preview", "login", "d1:create", "queues:create"]) {
+    assert.ok(pkg.scripts[name], `script ${name}`);
+  }
+  const dir = new URL(".github/workflows/", root);
+  const files = [...readdirSync(dir).filter((f) => f.endsWith(".yml")).map((f) => new URL(f, dir)),
+    new URL("README.md", root), new URL("AGENTS.md", root)];
+  for (const file of files) {
+    assert.doesNotMatch(readFileSync(file, "utf8"), /pnpm exec|pnpm wrangler/, file.pathname.split("/").pop());
   }
 });
 

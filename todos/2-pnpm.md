@@ -2,6 +2,19 @@
 
 Depends on: 1 (Node 26).
 
+**Status: done (2026-11-20).** pnpm 12.4.2 via `devEngines.packageManager`; `pnpm import` kept the
+same versions (wrangler 4.164.0); `package-lock.json` removed. `pnpm-workspace.yaml` allows builds for `esbuild` and
+`workerd` only. Workflows use `pnpm/setup@v3` (installs Node and pnpm from `devEngines`, then
+`pnpm install --frozen-lockfile` with `require-lockfile: true`, store cache on), replacing `actions/setup-node`.
+`actions/checkout` moved to `@v7` (floating tag = v7.0.1, Latest; its breaking change only affects
+`pull_request_target` / `workflow_run`, which we do not use). Docs and scripts say `pnpm`.
+Every command is a `package.json` script (`login`, `deploy:preview`, `d1:create`, `queues:create` added), so
+workflows and docs use `pnpm run ...` and never `pnpm exec`; a test enforces it. Checked: tests 10/10 after a clean install from an empty store; `pnpm dev` answers
+`/sample/api/hello` with 200; `pnpm new-lesson` passes arguments without `--`.
+Found: with `devEngines.runtime` `onFail: download`, pnpm installs Node (26.13.1) as a locked project dependency,
+so local scripts run on that Node whatever is installed globally. `pnpm deploy` is a pnpm built-in; the docs use
+`pnpm run deploy`. Not verified: `pnpm ui` (not run) and CI (not pushed).
+
 ## Why
 
 - Faster installs, a strict `node_modules` (a package can only import what it declares), and a content-addressed

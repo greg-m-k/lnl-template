@@ -1,5 +1,5 @@
 // Drive the site in a real browser and check what a visitor sees.
-// npm run dev, then: npm run ui   (BASE=https://your.domain npm run ui for production)
+// pnpm dev, then: pnpm ui   (BASE=https://your.domain pnpm ui for production)
 // Uses the installed Edge; set CHANNEL=chrome to use Chrome.
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";

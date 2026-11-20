@@ -1,7 +1,8 @@
 # 1. Node: move to 26 LTS and declare the version once
 
 **Status: done (2026-11-20).** `engines` + `devEngines.runtime` in `package.json`; `ci.yml` and `deploy.yml` on
-`actions/checkout@v6` and `actions/setup-node@v7` with `node-version-file: package.json`; test in
+`actions/checkout@v6` and `actions/setup-node@v7` with `node-version-file: package.json` (todo 2 then moved checkout to
+`@v7`, v7.0.1, and replaced setup-node with `pnpm/setup@v3`); test in
 `test/site.test.mjs`; README updated. `npm test` 9/9 and `npm run dev` on Node 26.8.2. Not verified: `npm run ui`
 (not run), and whether `setup-node@v7` still reads `devEngines.runtime` (the first CI run shows it).
 

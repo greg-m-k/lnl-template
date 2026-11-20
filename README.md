@@ -31,17 +31,18 @@ It comes with:
   from this kit, see [apollo-lnl](https://github.com/greg-m-k/apollo-lnl) and [useeffect-lnl](https://github.com/greg-m-k/useeffect-lnl).
 - `AGENTS.md`: the rules and workflow for building a topic, for coding agents and the engineers directing them.
 - Subagents in `.claude/agents/`: `topic-designer`, `pattern-builder`, `lesson-reviewer`, `session-facilitator`.
-- A scaffold: `npm run new-lesson -- <topic> <lesson> "Title"`.
+- A scaffold: `pnpm new-lesson <topic> <lesson> "Title"`.
 
 ## Run it on your laptop
 
-Every topic runs locally from a fresh clone. You need Node 26 (the version is set in `package.json`), and nothing else: no Cloudflare account.
+Every topic runs locally from a fresh clone. You need pnpm and nothing else: no Cloudflare account. Install pnpm once
+with `npm install -g pnpm`. pnpm then fetches the Node and pnpm versions set in `package.json` for this project.
 
 ```
-npm install
-npm test
-npm run dev          # http://localhost:8800
-npm run ui           # in a second terminal: walks every page in Edge (CHANNEL=chrome for Chrome)
+pnpm install
+pnpm test
+pnpm dev             # http://localhost:8800
+pnpm ui              # in a second terminal: walks every page in Edge (CHANNEL=chrome for Chrome)
 ```
 
 Deploying (below) gives a topic its live page on your Lunch & Learn site. It is never required to run one.
@@ -66,9 +67,9 @@ Cloudflare builds and deploys straight from GitHub. There are no API tokens to c
 2. **Connect GitHub** and install the Cloudflare GitHub app. Give it access to this repository only.
 3. Pick the repository and set:
    - **Project name**: exactly the `name` in `wrangler.jsonc`.
-   - **Build command**: `npm test` (a failing test stops the deploy).
-   - **Deploy command**: `npx wrangler deploy`.
-   - **Non-production branch deploy command**: `npx wrangler versions upload`.
+   - **Build command**: `pnpm test` (a failing test stops the deploy).
+   - **Deploy command**: `pnpm run deploy`.
+   - **Non-production branch deploy command**: `pnpm run deploy:preview`.
 4. **Deploy**.
 
 From then on, every push to `main` deploys, and every other branch gets its own preview URL, which is posted on its pull
@@ -81,7 +82,7 @@ domain's zone must be on the same Cloudflare account. The next deploy creates th
 
 ### Continuous integration
 
-`.github/workflows/ci.yml` runs on every push and pull request: `npm test`, then `wrangler dev` and the browser
+`.github/workflows/ci.yml` runs on every push and pull request: `pnpm test`, then `wrangler dev` and the browser
 walkthrough of every page in Chrome. It needs no secrets. Turn on branch protection for `main` and require the `ci`
 check, so nothing merges, and therefore nothing deploys, unless every lesson still works.
 
@@ -97,7 +98,7 @@ Use one deploy path, not both.
 
 ### From your laptop
 
-`npx wrangler login`, then `npm run deploy`.
+`pnpm run login`, then `pnpm run deploy` (plain `pnpm deploy` is a different, built-in pnpm command).
 
 ## Mount a topic on another Lunch & Learn site
 

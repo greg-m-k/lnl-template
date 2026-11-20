@@ -14,13 +14,13 @@ jobs:
     if: vars.DEPLOY_WITH_ACTIONS == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v7
+      # Installs the pnpm and Node versions from package.json's devEngines, then pnpm install --frozen-lockfile.
+      - uses: pnpm/setup@v3
         with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      - run: npm test
+          cache: true
+          require-lockfile: true
+      - run: pnpm test
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
