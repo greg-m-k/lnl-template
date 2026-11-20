@@ -1,4 +1,14 @@
-# 5. Move the site to Astro 6 (on Alchemy)
+# 5. Move the site to Astro (on Alchemy)
+
+**Status: done (2026-11-20).** Astro 7.4.13 (not 6). Pages are `.astro` in `src/pages/`, in `Base.astro` and
+`Lesson.astro` layouts that draw the chips, Next link and footer when the page is built. Deviations from the plan
+below: one catalogue, `src/site.json` (moved from `public/topics.json`), instead of a content collection with a
+`topic.json` per topic; page skeletons stay inline in `scripts/new-lesson.mjs` instead of a `templates/` folder;
+`showSource` with `?raw` waits for todo 8, since no topic has pattern files yet. The API route finds
+`src/topics/<topic>/server.js` by folder. wrangler, `wrangler.jsonc` and `deploy.yml` are gone; `login`, `deploy`
+and `destroy` scripts use Alchemy. README and AGENTS.md describe the new layout. Tests: the harness checks the served
+pages and API; the browser project renders every page with Astro's Container API (a Vitest browser command) and checks
+390px width and console errors in Chrome. 21/21 pass. A scaffolded demo topic rendered and passed every page check.
 
 Depends on: 4 (go / no-go decides the Cloudflare config). Biggest todo; land it in small commits.
 

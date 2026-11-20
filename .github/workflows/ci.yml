@@ -1,7 +1,6 @@
 # Checks pushes to main and every pull request with one `pnpm run test`: unit checks, the real site served
 # locally by Alchemy's test harness, and the site frame in Chrome (Vitest browser mode).
 # Deploys nothing and needs no secrets.
-# Deploying is done by Cloudflare Workers Builds (see README), or by deploy.yml if you opt in.
 name: ci
 # A branch with an open pull request runs once, as the pull request.
 on:
@@ -20,7 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      WRANGLER_SEND_METRICS: "false"
       DO_NOT_TRACK: "1" # Alchemy's CLI sends usage telemetry unless this is set
     steps:
       - uses: actions/checkout@v7

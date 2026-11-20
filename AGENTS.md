@@ -32,33 +32,25 @@ coding agents and for the senior engineers who direct them.
 
 ## Layout
 
-A topic owns every path below `/<topic>/`, so another Lunch & Learn site can mount it by forwarding `/<topic>/*`
-to this Worker:
-
-- Pages: `/<topic>/<lesson>/`.
-- Server code: `/<topic>/api/...`.
-- The site frame: `/<topic>/site/styles.css`, `/<topic>/site/lib/...` and `/<topic>/site/topics.json`. These are
-  the files in `public/`, served below each topic by `src/index.js`.
-
-A lesson page never links `/styles.css`, `/lib/...` or `/api/...` directly. `pnpm new-lesson` writes the right
-paths, and the tests check them.
+A topic's pages are `/<topic>/<lesson>/` and its server code answers `/<topic>/api/...`.
 
 ```
-public/topics.json                    The catalogue: site intro, topics, lessons. The one place lessons are listed.
-public/index.html                     Home: rendered from topics.json (lib/site.js home()).
-public/styles.css                     House style. Change it here, never per page.
-public/lib/site.js                    Site frame: home cards, lesson chips, Next link, footer.
-public/lib/ui.js                      Lesson helpers: el, logger, say, press/pressed, timeline, showSource, busy.
-public/<topic>/<lesson>/index.html    One page per lesson. The first lesson of every topic is start/.
-public/<topic>/patterns/<pattern>.js  Browser-side pattern code, one standalone file per pattern.
-topics/<topic>/api.js                 The topic's real server code, registered in src/index.js.
-topics/<topic>/patterns/<pattern>/    A topic that needs its own Workers puts each pattern's services here.
-topics/<topic>/TOPIC.md               The question, the patterns, the glossary, and the claim each lesson proves.
-topics/<topic>/FACILITATION.md        The talk track for presenting the topic live.
 alchemy.run.ts                        The site's Cloudflare setup (Alchemy): one Astro site, run locally by pnpm run dev.
-src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to that topic's server code.
-src/pages/[topic]/site/[...path].ts   /<topic>/site/... serves the site frame from public/.
-scripts/new-lesson.mjs                Scaffold: pnpm new-lesson <topic> <lesson> "Title".
+                                      A topic's D1 databases, Queues and Durable Objects are declared here, in code.
+astro.config.ts                       Astro's config. No adapter: Alchemy supplies it.
+src/site.json                         The catalogue: site intro, topics, lessons. The one place lessons are listed.
+src/layouts/Base.astro                The document every page shares: head, house stylesheet, <main>.
+src/layouts/Lesson.astro              A lesson: chips for its topic, Next link and footer, drawn from site.json.
+src/styles/site.css                   House style. Change it here, never per page.
+src/lib/ui.js                         Lesson helpers: el, logger, say, press/pressed, timeline, showSource, busy.
+src/pages/index.astro                 Home: one card per lesson, from site.json.
+src/pages/<topic>/<lesson>.astro      One page per lesson, in the Lesson layout. The first lesson of every topic is start.
+src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to src/topics/<topic>/server.js, found by folder.
+src/topics/<topic>/server.js          The topic's real server code: handle(request) returns a Response.
+src/topics/<topic>/patterns/<p>.js    Browser-side pattern code, one standalone file per pattern.
+src/topics/<topic>/TOPIC.md           The question, the patterns, the glossary, and the claim each lesson proves.
+src/topics/<topic>/FACILITATION.md    The talk track for presenting the topic live.
+scripts/new-lesson.mjs                Scaffold: pnpm run new-lesson <topic> <lesson> "Title".
 vitest.config.ts                      pnpm run test runs two projects: node and browser.
 test/*.test.mjs                       Node: catalogue, scaffold and config checks.
 test/*.integ.test.ts                  Node: the real site, booted locally by Alchemy's test harness, driven over HTTP.
@@ -70,7 +62,7 @@ test/*.browser.test.ts                Browser: page code in a real Chrome (Vites
 
 Every lesson page has the same shape, so a room can follow it on a projector:
 
-1. **Chips** (drawn by `lesson()`): Home, then every lesson in the topic, current one filled.
+1. **Chips** (drawn by the Lesson layout): Home, then every lesson in the topic, current one filled.
 2. **h1**: the lesson's question in plain words ("When a service goes down").
 3. **Lead paragraph**: the situation, each pattern in one sentence with its name in its colour
    (`<strong data-color="blue">`), what to try, and "New to these terms? Start here".
@@ -79,7 +71,7 @@ Every lesson page has the same shape, so a room can follow it on a projector:
 5. **One panel per pattern, side by side** (`.cols` > `.panel[data-color]`): a one-line description, the measured
    timeline, the code that ran, the answer, the console. Same order in every panel.
 6. **Insight callout**: what the run showed and when the "losing" pattern is still the right choice.
-7. **Next link and footer** (drawn by `lesson()`).
+7. **Next link and footer** (drawn by the Lesson layout).
 
 A **Start here** page (`class="prose"`) opens each topic: the problem, then for each pattern what it does, a small
 diagram in a `<pre>`, what you get, what it costs, then a glossary (`<dl>`) of every term.
@@ -95,9 +87,9 @@ Plain declarative sentences that say what happens. Write for a senior engineer r
 - No filler intensifiers (really, truly, simply, just) and no rhetorical questions in prose. A question to the room
   belongs in a control panel's "try this" line.
 - One idea per sentence where you can. Define a term the first time, then use it the same way every time.
-- The home page credits where the format comes from: `origin` in `public/topics.json` links lnl.sam-peterson.com,
+- The home page credits where the format comes from: `origin` in `src/site.json` links lnl.sam-peterson.com,
   the original site of this kind. Keep it.
-- The footer credits the author (`author` in `public/topics.json`). Notes about what a visitor does, such as how long
+- The footer credits the author (`author` in `src/site.json`). Notes about what a visitor does, such as how long
   data they create is kept or when switches turn off, go on the lesson page next to the control that does it.
 
 ## House style
@@ -137,22 +129,22 @@ patterns as intended; only de-duplicate inside one file.
 
 ## Adding a topic, step by step
 
-1. `topic-designer` agent: turn the argument into `topics/<slug>/TOPIC.md` (question, patterns, glossary, claims table).
-2. `pnpm new-lesson <slug> <lesson> "Title"` for each lesson in the claims table. The first call also creates
-   the topic, its Start here page and `TOPIC.md` if it does not exist.
-3. Fill in the topic's `title`, `emoji`, `summary` and each lesson's `blurb` in `public/topics.json`.
+1. `topic-designer` agent: turn the argument into `src/topics/<slug>/TOPIC.md` (question, patterns, glossary, claims
+   table).
+2. `pnpm run new-lesson <slug> <lesson> "Title"` for each lesson in the claims table. The first call also creates
+   the topic, its Start here page, `TOPIC.md` and a placeholder `server.js` if they do not exist.
+3. Fill in the topic's `title`, `emoji`, `summary` and each lesson's `blurb` in `src/site.json`.
 4. `pattern-builder` agent, once per pattern: the real pattern code and any server code, test first.
 5. Write each lesson page to the anatomy above. For complete lessons, see https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl.
 6. `lesson-reviewer` agent: review every page as a senior engineer new to the domain. Fix what it finds.
-7. `session-facilitator` agent: write `topics/<slug>/FACILITATION.md`.
+7. `session-facilitator` agent: write `src/topics/<slug>/FACILITATION.md`.
 8. `pnpm run test`, and try it in `pnpm run dev`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
-   checks, and on a repository connected to Cloudflare Workers Builds a push to `main` deploys. Open a pull request for
-   review; its preview URL is the place to try the topic before it goes live.
+   checks. Open a pull request for review.
 
-Anything a topic needs from Cloudflare (D1, Queues, Durable Objects, service bindings) is declared in `wrangler.jsonc`
-and committed, so every deploy path uses the same setup. Create a database or queue once with wrangler
-(`pnpm run d1:create <name>`, `pnpm run queues:create <name>`) and commit the id it prints into `wrangler.jsonc`;
-do not configure bindings by hand in the dashboard, where the next deploy would overwrite them.
+Anything a topic needs from Cloudflare (D1, Queues, Durable Objects, service bindings) is declared in `alchemy.run.ts`
+and bound to the site's `env` there, so local runs and deploys use the same setup. Alchemy creates each resource on
+first use: a local simulator under `pnpm run dev` and the tests, the real resource on deploy. Do not configure bindings
+by hand in the Cloudflare dashboard.
 
 ## Commands
 
@@ -161,11 +153,9 @@ pnpm install                      pnpm fetches the Node and pnpm versions set in
 pnpm run test                     node checks, the site booted by Alchemy's harness, page code in Chrome
 pnpm run dev                      the site and APIs at http://localhost:8800
 pnpm run new-lesson <topic> <lesson> "Title"
-pnpm run d1:create <name>         create a D1 database once; commit the id it prints into wrangler.jsonc
-pnpm run queues:create <name>     create a queue once
-pnpm run login                    log wrangler in to Cloudflare (only needed to deploy)
+pnpm run login                    connect a Cloudflare account to Alchemy (only needed to deploy)
 pnpm run deploy                   deploy (ask first)
-pnpm run deploy:preview           upload a preview version without deploying it
+pnpm run destroy                  remove a deployment (ask first)
 ```
 
 ## Glossary of this kit

@@ -21,11 +21,9 @@
     "dev": "alchemy dev",
     "test": "vitest run",
     "new-lesson": "node scripts/new-lesson.mjs",
-    "login": "wrangler login",
-    "deploy": "wrangler deploy",
-    "deploy:preview": "wrangler versions upload",
-    "d1:create": "wrangler d1 create",
-    "queues:create": "wrangler queues create"
+    "login": "alchemy profile edit --add Cloudflare",
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy"
   },
   "devDependencies": {
     "@alchemy.run/frontend-frameworks": "2.0.0-beta.87",
@@ -33,8 +31,7 @@
     "@effect/vitest": "^4.1.4",
     "@vitest/browser-playwright": "^5.1.1",
     "astro": "^7.4.13",
-    "vitest": "^5.1.1",
-    "wrangler": "^4.163.0"
+    "vitest": "^5.1.1"
   },
   "dependencies": {
     "@alchemy.run/cloudflare": "2.0.0-beta.87",

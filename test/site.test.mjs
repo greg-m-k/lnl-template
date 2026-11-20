@@ -86,9 +86,12 @@ test("pnpm: package.json pins it, the lockfile is pnpm's, and no workflow calls 
 // Every command a person or CI runs is a package.json script, so `pnpm run` lists all of them.
 test("scripts: workflows and docs run package.json scripts, never a tool directly", () => {
   const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
-  for (const name of ["dev", "test", "new-lesson", "deploy", "deploy:preview", "login", "d1:create", "queues:create"]) {
+  for (const name of ["dev", "test", "new-lesson", "login", "deploy", "destroy"]) {
     assert.ok(pkg.scripts[name], `script ${name}`);
   }
+  // Cloudflare is set up by Alchemy (alchemy.run.ts); wrangler is not used.
+  assert.ok(!Object.values(pkg.scripts).some((s) => /\bwrangler\b/.test(s)), "no wrangler script");
+  assert.ok(!pkg.devDependencies?.wrangler && !existsSync(new URL("wrangler.jsonc", root)), "no wrangler");
   const dir = new URL(".github/workflows/", root);
   const files = [...readdirSync(dir).filter((f) => f.endsWith(".yml")).map((f) => new URL(f, dir)),
     new URL("README.md", root), new URL("AGENTS.md", root)];
