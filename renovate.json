@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "Minor and patch updates to npm packages and GitHub Actions arrive as one weekly pull request.",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "non-major"
+    },
+    {
+      "description": "Alchemy is in beta and Graffiti may rename tokens: pin exact versions and review their updates on their own.",
+      "matchPackageNames": ["alchemy", "/^@alchemy\\.run\\//", "@drop-in/graffiti"],
+      "groupName": "alchemy and graffiti",
+      "rangeStrategy": "pin"
+    }
+  ]
+}

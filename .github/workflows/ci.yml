@@ -1,10 +1,19 @@
-# Checks every push and pull request: unit tests, then the browser walkthrough of every page
+# Checks pushes to main and every pull request: unit tests, then the browser walkthrough of every page
 # against a local wrangler dev. Deploys nothing and needs no secrets.
 # Deploying is done by Cloudflare Workers Builds (see README), or by deploy.yml if you opt in.
 name: ci
+# A branch with an open pull request runs once, as the pull request.
 on:
   push:
+    branches: [main]
   pull_request:
+# The GITHUB_TOKEN can read the repository and nothing else.
+permissions:
+  contents: read
+# A new push to the same branch or pull request cancels the run it replaces.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,13 +27,13 @@ jobs:
         with:
           cache: true
           require-lockfile: true
-      - run: pnpm test
+      - run: pnpm run test
       - name: Start the site locally
         run: |
           pnpm run dev > wrangler-dev.log 2>&1 &
           for i in $(seq 1 60); do curl -sf http://localhost:8800/ > /dev/null && exit 0; sleep 1; done
           cat wrangler-dev.log; exit 1
       - name: Walk every page in Chrome
-        run: pnpm ui
+        run: pnpm run ui
         env:
           CHANNEL: chrome

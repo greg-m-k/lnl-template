@@ -110,6 +110,25 @@ test("scripts: workflows and docs run package.json scripts, never a tool directl
   }
 });
 
+test("ci: least-privilege token, one run per change, cancelled when superseded", () => {
+  const ci = readFileSync(new URL(".github/workflows/ci.yml", root), "utf8");
+  assert.match(ci, /^permissions:\n\s+contents: read\n/m, "top-level permissions: contents: read");
+  assert.match(ci, /^concurrency:\n\s+group: ci-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: true\n/m);
+  assert.match(ci, /^on:\n\s+push:\n\s+branches: \[main\]\n\s+pull_request:\n/m, "push to main and pull requests only");
+});
+
+test("renovate: held a few days, weekly, beta packages pinned in a group of their own", () => {
+  const cfg = JSON.parse(readFileSync(new URL("renovate.json", root), "utf8"));
+  assert.match(cfg.minimumReleaseAge ?? "", /^\d+ days$/);
+  assert.ok(cfg.schedule?.length, "a schedule");
+  const own = cfg.packageRules?.find((r) => r.groupName === "alchemy and graffiti");
+  assert.ok(own, "alchemy and graffiti in their own group");
+  assert.equal(own.rangeStrategy, "pin");
+  for (const name of ["alchemy", "@alchemy.run/cloudflare", "@drop-in/graffiti"]) {
+    assert.ok(own.matchPackageNames.some((p) => p === name || (p.startsWith("/") && new RegExp(p.slice(1, -1)).test(name))), name);
+  }
+});
+
 test("every lesson page loads the frame and calls its API below its own topic", () => {
   for (const t of catalogue.topics) for (const l of t.lessons) {
     const html = readFileSync(new URL(`public${l.path}index.html`, root), "utf8");
