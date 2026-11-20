@@ -9,18 +9,17 @@ export const prerender = true;
 <Base
   title={site.title}
   description="Interactive Lunch & Learn lessons: competing patterns, really running, side by side."
-  mainClass="home"
 >
-  <header>
+  <header class="stack">
     <h1>{site.title}</h1>
-    <p class="lead">{site.intro}</p>
-    <p class="lead">
+    <p>{site.intro}</p>
+    <p>
       {site.origin.text} <a href={site.origin.url}>{new URL(site.origin.url).host}</a>.
     </p>
   </header>
   {
     site.topics.map((t) => (
-      <section class="topic" aria-labelledby={`topic-${t.slug}`}>
+      <section class="stack" aria-labelledby={`topic-${t.slug}`}>
         <h2 id={`topic-${t.slug}`}>
           <span aria-hidden="true">{t.emoji}</span> {t.title}
         </h2>
@@ -36,18 +35,15 @@ export const prerender = true;
             </span>
           )}
         </p>
-        <ul class="cards">
+        <div class="layout-card">
           {t.lessons.map((l) => (
-            <li>
-              <a class="card" href={l.path}>
-                <h3>{l.title}</h3>
-                <p>{l.blurb}</p>
-              </a>
-            </li>
+            <a class="card linked" href={l.path}>
+              <h3 class="h5">{l.title}</h3>
+              <p>{l.blurb}</p>
+            </a>
           ))}
-        </ul>
+        </div>
       </section>
     ))
   }
-  <footer class="site" slot="after">Made by <a href={site.author.url}>{site.author.name}</a>.</footer>
 </Base>

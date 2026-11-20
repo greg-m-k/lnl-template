@@ -39,9 +39,9 @@ alchemy.run.ts                        The site's Cloudflare setup (Alchemy): one
                                       A topic's D1 databases, Queues and Durable Objects are declared here, in code.
 astro.config.ts                       Astro's config. No adapter: Alchemy supplies it.
 src/site.json                         The catalogue: site intro, topics, lessons. The one place lessons are listed.
-src/layouts/Base.astro                The document every page shares: head, house stylesheet, <main>.
-src/layouts/Lesson.astro              A lesson: chips for its topic, Next link and footer, drawn from site.json.
-src/styles/site.css                   House style. Change it here, never per page.
+src/layouts/Base.astro                Every page: one Graffiti .layout-readable column (header, main, footer).
+src/layouts/Lesson.astro              A lesson: its topic's chips in the header, then a Next link, from site.json.
+src/styles/theme.css                  Imports Graffiti's full bundle. Nothing else: there is no custom CSS.
 src/lib/ui.ts                         Lesson helpers: el, logger, say, press/pressed, timeline, showSource, busy.
 src/pages/index.astro                 Home: one card per lesson, from site.json.
 src/pages/<topic>/<lesson>.astro      One page per lesson, in the Lesson layout. The first lesson of every topic is start.
@@ -64,19 +64,21 @@ test/*.browser.test.ts                Browser: page code in a real Chrome (Vites
 
 Every lesson page has the same shape, so a room can follow it on a projector:
 
-1. **Chips** (drawn by the Lesson layout): Home, then every lesson in the topic, current one filled.
+1. **Header and chips** (drawn by the layouts): a "← Home" chip (on every page but home), then every lesson in the
+   topic as a Graffiti `.chip`, the current one `.selected`.
 2. **h1**: the lesson's question in plain words ("When a service goes down").
 3. **Lead paragraph**: the situation, each pattern in one sentence with its name in its colour
    (`<strong data-color="blue">`), what to try, and "New to these terms? Start here".
-4. **Control panel**: the run button, a status line, the sliders and switches, and one line suggesting what to
-   try and asking for a prediction.
-5. **One panel per pattern, side by side** (`.cols` > `.panel[data-color]`): a one-line description, the measured
-   timeline, the code that ran, the answer, the console. Same order in every panel.
-6. **Insight callout**: what the run showed and when the "losing" pattern is still the right choice.
-7. **Next link and footer** (drawn by the Lesson layout).
+4. **Control panel** (`.card`, its controls in a `.cluster`): the run button, a status line (`.tag`), the sliders
+   and switches, and one line suggesting what to try and asking for a prediction.
+5. **One panel per pattern, side by side** (`.layout-card` > `.card[data-color]`): a one-line description, the
+   measured timeline, the code that ran, the answer, the console. Same order in every panel.
+6. **Insight callout** (Graffiti `.callout`): what the run showed and when the "losing" pattern is still the right
+   choice.
+7. **Next link and footer** (drawn by the layouts).
 
-A **Start here** page (`class="prose"`) opens each topic: the problem, then for each pattern what it does, a small
-diagram in a `<pre>`, what you get, what it costs, then a glossary (`<dl>`) of every term.
+A **Start here** page opens each topic: the problem, then for each pattern what it does, a small diagram in a
+`<pre>`, what you get, what it costs, then a glossary (`<dl>`) of every term.
 
 Each pattern keeps one colour across the whole topic: `blue`, `green`, `purple` or `orange`.
 
@@ -97,12 +99,19 @@ Plain declarative sentences that say what happens. Write for a senior engineer r
 ## House style
 
 - Plain and quiet, like a well-made reference page. The running patterns are the show.
-- No coloured bars on top of cards or panels, no number badges, no gradients-as-decoration, no glow, no hero.
+- [Graffiti](https://graffiti-ui.com/) (`@drop-in/graffiti`, its full bundle) styles every page, used as shipped: its
+  elements, layouts (`.layout-readable`, `.stack`, `.cluster`, `.layout-card`) and components (`.card`, `.chip`,
+  `.callout`, `.tag`, `.log-card`, `.h1`–`.h6` sizes). Do not import its standalone modules (`/standard`,
+  `/components`, ...): each re-declares Graffiti's tokens outside its cascade layers and overrides the real ones.
+- No custom CSS. `src/styles/theme.css` only imports Graffiti; a test fails if it holds anything else or if another
+  stylesheet appears.
+- No coloured bars on top of cards or panels, no number badges, no gradients-as-decoration, no glow, no hero. Do not
+  use Graffiti's decorative variants (`.box.glow`, gradient utilities, preset themes).
   A pattern's colour appears only in its name, its own panel and its timeline bars. Panels that are not one pattern's
-  (controls, steps to take, shared results) stay neutral white, so a colour always means the same pattern.
+  (controls, steps to take, shared results) stay neutral, so a colour always means the same pattern.
 - Paragraph text runs the full width of the column. Do not cap line length.
-- Every page fits a 390px phone with no sideways scrolling; the chip row scrolls on its own.
-- Light and dark mode both work, from the tokens in `styles.css`.
+- Every page fits a 390px phone with no sideways scrolling; the chip row wraps.
+- Light and dark mode both work: Graffiti follows the system scheme with `light-dark()`.
 
 ## How to work (the ub-mode way)
 

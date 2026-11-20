@@ -176,6 +176,17 @@ test('lint: type-aware oxlint and oxfmt run from scripts, and CI runs lint, then
   assert.deepEqual(steps, ['lint', 'check', 'test']);
 });
 
+test('styles: Graffiti styles the site, with no custom CSS', () => {
+  assert.deepEqual(readdirSync(new URL('src/styles/', root)), ['theme.css'], 'one stylesheet');
+  const base = readFileSync(new URL('src/layouts/Base.astro', root), 'utf8');
+  assert.match(base, /import '\.\.\/styles\/theme\.css'/);
+  const css = readFileSync(new URL('src/styles/theme.css', root), 'utf8')
+    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    .trim();
+  // Graffiti's full bundle and nothing else (its standalone modules re-declare its tokens outside its layers).
+  assert.equal(css, "@import '@drop-in/graffiti';");
+});
+
 test('ci: least-privilege token, one run per change, cancelled when superseded', () => {
   const ci = readFileSync(new URL('.github/workflows/ci.yml', root), 'utf8');
   assert.match(ci, /^permissions:\n\s+contents: read\n/m, 'top-level permissions: contents: read');

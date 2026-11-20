@@ -55,16 +55,16 @@ export function addLesson(
 }
 
 const attr = (s: string) => s.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
-const page = (title: string, start: boolean) => `---
+const page = (title: string) => `---
 import Lesson from '../../layouts/Lesson.astro';
 
 export const prerender = true;
 ---
 
-<Lesson title="${attr(title)}"${start ? ' prose' : ''}>
+<Lesson title="${attr(title)}">
   <h1>${title}</h1>
-  <p class="lead">
-    TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with
+  <p>
+    TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with{' '}
     <code>&lt;strong data-color="..."&gt;</code>), what to try, and a link back to Start here for the terms.
   </p>
   <!-- See AGENTS.md "Lesson anatomy". Complete lessons: https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl. -->
@@ -130,10 +130,7 @@ function main([topic, lesson, title]: string[]) {
     written.push(path);
   };
   for (const l of entry.lessons) {
-    write(
-      `src/pages${l.path.slice(0, -1)}.astro`,
-      page(l.title ?? l.path, l.path.endsWith('/start/')),
-    );
+    write(`src/pages${l.path.slice(0, -1)}.astro`, page(l.title ?? l.path));
   }
   if (isNewTopic) {
     write(`src/topics/${topic}/TOPIC.md`, topicDoc(topic));

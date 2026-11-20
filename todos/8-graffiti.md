@@ -1,5 +1,31 @@
 # 8. Replace the house stylesheet with Graffiti, used as shipped
 
+**Status: done (2026-11-21).** Net new: Graffiti only, no custom CSS, nothing kept from the old stylesheet.
+`@drop-in/graffiti` 4.30.0, pinned exactly. Its licence is ISC (not MIT as researched), and it carries a runtime
+dependency on `@humanspeak/svelte-markdown` (Svelte comes with it into `node_modules`; nothing of it reaches the site).
+
+- `src/styles/theme.css` is the only stylesheet and holds one line, `@import '@drop-in/graffiti'` (a CSS import:
+  TypeScript cannot type side-effect imports of Graffiti's extensionless CSS export names). The full bundle, not the
+  `standard` + `components` modules the plan named: each standalone module opens with an unlayered `:root` block whose
+  forced-colors fallbacks were flattened without their `@media` wrapper (`--primary: LinkText`,
+  `--border-1: solid 1px CanvasText`, `--error: Mark`, `--shadow-*: none`), overriding Graffiti's real tokens. A test
+  requires `theme.css` to be exactly that import and forbids any other stylesheet.
+- One page layout for every route (`Base.astro`): `<body class="layout-readable section stack">` holding a header
+  (`.cluster`: a "← Home" chip on every page but home, then the page's own nav), `<main class="stack">` and the footer
+  (author credit, written once). Page padding lives in one place, so every page lines up the same.
+- Lessons put their topic's chips in the header (`.chip`, current one `.selected` plus `aria-current`). Home: an intro,
+  then a `section.stack` per topic with a `div.layout-card` whose direct children are the `a.card.linked` cards (with
+  `h3.h5`), so cards in a row are one height (a browser test measures the row).
+- Removed: the old stylesheet and every old class (`.lead`, `.chips`, `.topic`, `.prose` and the `prose` prop), the
+  old page width and the `[data-color]` pattern colours.
+- Fixed on the way: a missing space before `<code>` in the sample pages and the scaffold's page template (Astro drops
+  a line break between text and an element; written as `{' '}`). Present since todo 5.
+- Tests: the stylesheet test above; a browser test checks Graffiti's styles applied (chip pill shape; failed with
+  Graffiti removed), the Home chip on every page but home, the footer credit, card heights and 390px width.
+- Left for later (outside CSS): AGENTS.md's lesson anatomy still says to colour pattern names with
+  `<strong data-color>`, which nothing styles now; `src/lib/ui.ts` still writes old widget classes (`.status`,
+  `.lane`, `.track`, `.seg`) that have no CSS.
+
 Depends on: 5 (Astro layouts). Comes before 9, which maps the code theme onto Graffiti's tokens.
 
 ## Decision

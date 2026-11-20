@@ -37,8 +37,8 @@ test(
   'home: one section per topic, one card per lesson, credits the origin and the author',
   Effect.gen(function* () {
     const page = yield* html('/');
-    expect(page.match(/<section class="topic"/g)).toHaveLength(site.topics.length);
-    expect(page.match(/<a class="card"/g)).toHaveLength(lessons.length);
+    expect(page.match(/<section [^>]*aria-labelledby="topic-/g)).toHaveLength(site.topics.length);
+    expect(page.match(/<a class="card\b[^"]*"/g)).toHaveLength(lessons.length);
     expect(page).toContain(`href="${site.origin.url}"`);
     expect(page).toContain(credit);
   }),
@@ -50,13 +50,16 @@ test(
   Effect.gen(function* () {
     for (const [i, l] of lessons.entries()) {
       const page = yield* html(l.path);
+      // The current lesson's chip is marked both for screen readers and for Graffiti's .selected style.
       expect(page, l.path).toMatch(
-        new RegExp(`href="${l.path}"[^>]*aria-current="page"[^>]*>\\s*${l.chip ?? l.title}\\s*<`),
+        new RegExp(
+          `class="chip selected"[^>]*href="${l.path}"[^>]*aria-current="page"[^>]*>\\s*${l.chip ?? l.title}\\s*<`,
+        ),
       );
       expect(
-        page.match(/<nav class="chips"[\s\S]*?<\/nav>/)?.[0].match(/<a /g),
+        page.match(/<nav [^>]*aria-label="[^"]* lessons"[\s\S]*?<\/nav>/)?.[0].match(/<a /g),
         l.path,
-      ).toHaveLength(l.topic.lessons.length + 1);
+      ).toHaveLength(l.topic.lessons.length);
       const next = lessons[i + 1];
       if (next && next.topic === l.topic) expect(page, l.path).toContain(`href="${next.path}"`);
       expect(page, l.path).toContain(credit);

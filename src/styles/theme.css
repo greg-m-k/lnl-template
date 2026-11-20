@@ -1,0 +1,3 @@
+/* Graffiti styles the site, used as shipped: its full bundle. (Its standalone modules re-declare its tokens outside
+   its cascade layers, so they are not used.) */
+@import '@drop-in/graffiti';

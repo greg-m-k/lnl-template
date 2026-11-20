@@ -1,14 +1,13 @@
 ---
-// A lesson page: chips for every lesson in its topic on top, "Next" and the footer at the bottom.
+// A lesson page: its topic's lessons as chips in the page header, the lesson, then a link to the next one.
 // Topics and lessons are listed in one place, src/site.json; nothing else repeats them.
 import site from '../site.json';
 import Base from './Base.astro';
 
 interface Props {
   title: string;
-  prose?: boolean;
 }
-const { title, prose } = Astro.props;
+const { title } = Astro.props;
 const here = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const topic = site.topics.find((t) => t.lessons.some((l) => l.path === here));
 if (!topic) throw new Error(`${here} is not listed in src/site.json`);
@@ -16,25 +15,20 @@ const index = topic.lessons.findIndex((l) => l.path === here);
 const next = topic.lessons[index + 1];
 ---
 
-<Base title={`${title} · ${site.title}`} mainClass={prose ? 'prose' : undefined}>
-  <nav class="chips" aria-label={`${topic.title} lessons`}>
-    <a href="/">← Home</a>
+<Base title={`${title} · ${site.title}`}>
+  <nav class="cluster" slot="nav" aria-label={`${topic.title} lessons`}>
     {
       topic.lessons.map((l) => (
-        <a href={l.path} aria-current={l.path === here ? 'page' : undefined}>
+        <a
+          class:list={['chip', { selected: l.path === here }]}
+          href={l.path}
+          aria-current={l.path === here ? 'page' : undefined}
+        >
           {l.chip ?? l.title}
         </a>
       ))
     }
   </nav>
   <slot />
-  {next && <p class="next">Next: <a href={next.path}>{next.title} →</a></p>}
-  <footer>Made by <a href={site.author.url}>{site.author.name}</a>.</footer>
+  {next && <p>Next: <a href={next.path}>{next.title} →</a></p>}
 </Base>
-
-<script>
-  // On a phone, open the chip row scrolled to this lesson.
-  const nav = document.querySelector<HTMLElement>('.chips');
-  const current = nav?.querySelector<HTMLElement>('[aria-current="page"]');
-  if (nav && current) nav.scrollLeft = current.offsetLeft - nav.offsetLeft - 18;
-</script>

@@ -1,13 +1,15 @@
 ---
-// The document every page shares: head, the house stylesheet, and the page's <main>.
-import '../styles/site.css';
+// The page every route shares: one Graffiti .layout-readable column with .section padding, holding a header (a Home
+// chip on every page but home, and the page's own navigation), the page's <main>, and the footer.
+import site from '../site.json';
+import '../styles/theme.css';
 
 interface Props {
   title: string;
   description?: string;
-  mainClass?: string;
 }
-const { title, description, mainClass } = Astro.props;
+const { title, description } = Astro.props;
+const isHome = Astro.url.pathname === '/';
 const icon =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='6' fill='%232563eb'/%3E%3Ccircle cx='23' cy='16' r='6' fill='%2316a34a'/%3E%3C/svg%3E";
 ---
@@ -21,8 +23,22 @@ const icon =
     {description && <meta name="description" content={description} />}
     <link rel="icon" href={icon} />
   </head>
-  <body>
-    <main class={mainClass}><slot /></main>
-    <slot name="after" />
+  <body class="layout-readable section stack">
+    {
+      !isHome && (
+        <header class="cluster">
+          <a class="chip" href="/">
+            ← Home
+          </a>
+          <slot name="nav" />
+        </header>
+      )
+    }
+    <main class="stack">
+      <slot />
+    </main>
+    <footer>
+      Made by <a href={site.author.url}>{site.author.name}</a>.
+    </footer>
   </body>
 </html>
