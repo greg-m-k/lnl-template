@@ -63,7 +63,7 @@ Docs: https://graffiti-ui.com/ · Source: https://github.com/stolinski/graffiti 
 ## Done when
 
 - `public/styles.css` is gone; the only local CSS is `lesson.css`.
-- Home and sample lesson read well in both schemes and pass `pnpm ui`.
+- Home and sample lesson read well in both schemes and pass `pnpm run test` (the browser project checks the 390px width).
 
 ## Accepted
 

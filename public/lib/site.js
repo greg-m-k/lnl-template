@@ -25,9 +25,10 @@ export async function home(main) {
 }
 
 // A lesson page: chips for every lesson in its topic on top, "Next" and the footer at the bottom.
-export async function lesson(main) {
-  const site = await catalogue(`/${location.pathname.split("/")[1]}/site/topics.json`);
-  const here = slash(location.pathname);
+// `path` is the lesson's own path; pages leave it out and get location.pathname.
+export async function lesson(main, path = location.pathname) {
+  const site = await catalogue(`/${path.split("/")[1]}/site/topics.json`);
+  const here = slash(path);
   const topic = site.topics.find((t) => t.lessons.some((l) => l.path === here));
   if (!topic) throw new Error(`${here} is not listed in topics.json`);
   const nav = el("nav", { class: "chips", "aria-label": `${topic.title} lessons` }, el("a", { href: "/" }, "← Home"),

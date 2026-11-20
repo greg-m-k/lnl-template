@@ -1,5 +1,6 @@
-# Checks pushes to main and every pull request: unit tests, then the browser walkthrough of every page
-# against a local wrangler dev. Deploys nothing and needs no secrets.
+# Checks pushes to main and every pull request with one `pnpm run test`: unit checks, the real site served
+# locally by Alchemy's test harness, and the site frame in Chrome (Vitest browser mode).
+# Deploys nothing and needs no secrets.
 # Deploying is done by Cloudflare Workers Builds (see README), or by deploy.yml if you opt in.
 name: ci
 # A branch with an open pull request runs once, as the pull request.
@@ -20,6 +21,7 @@ jobs:
     timeout-minutes: 15
     env:
       WRANGLER_SEND_METRICS: "false"
+      DO_NOT_TRACK: "1" # Alchemy's CLI sends usage telemetry unless this is set
     steps:
       - uses: actions/checkout@v7
       # Installs the pnpm and Node versions from package.json's devEngines, then pnpm install --frozen-lockfile.
@@ -28,12 +30,3 @@ jobs:
           cache: true
           require-lockfile: true
       - run: pnpm run test
-      - name: Start the site locally
-        run: |
-          pnpm run dev > wrangler-dev.log 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://localhost:8800/ > /dev/null && exit 0; sleep 1; done
-          cat wrangler-dev.log; exit 1
-      - name: Walk every page in Chrome
-        run: pnpm run ui
-        env:
-          CHANNEL: chrome

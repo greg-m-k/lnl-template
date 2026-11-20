@@ -22,7 +22,7 @@ coding agents and for the senior engineers who direct them.
   Never extract the pattern under comparison into a shared helper.
 - **Runs locally from a fresh clone. Always.** Anyone who downloads the repository must be able to run every topic on
   their own laptop with `pnpm install` and `pnpm dev`: no Cloudflare account, login, API token or remote resource.
-  Use only what `wrangler dev` runs locally (Workers, static assets, D1, Queues, Durable Objects, service bindings).
+  Use only what `alchemy dev` runs locally (Workers, static assets, D1, Queues, Durable Objects, service bindings).
   Never add something that only works deployed (Workers AI, Vectorize, Browser Rendering and the like) unless the topic
   also has a local path. Deploying is also required, but only so the topic has a live page on the LnL site; it is never
   the only way to run it.
@@ -55,10 +55,14 @@ topics/<topic>/api.js                 The topic's real server code, registered i
 topics/<topic>/patterns/<pattern>/    A topic that needs its own Workers puts each pattern's services here.
 topics/<topic>/TOPIC.md               The question, the patterns, the glossary, and the claim each lesson proves.
 topics/<topic>/FACILITATION.md        The talk track for presenting the topic live.
-src/index.js                          The site Worker: /<topic>/api/... to the topic, /<topic>/site/... to the frame.
+alchemy.run.ts                        The site's Cloudflare setup (Alchemy): one Astro site, run locally by pnpm run dev.
+src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to that topic's server code.
+src/pages/[topic]/site/[...path].ts   /<topic>/site/... serves the site frame from public/.
 scripts/new-lesson.mjs                Scaffold: pnpm new-lesson <topic> <lesson> "Title".
-test/site.test.mjs                    Catalogue, scaffold and server tests (pnpm test).
-test/ui.mjs                           Browser walkthrough of every page (pnpm ui, needs pnpm dev).
+vitest.config.ts                      pnpm run test runs two projects: node and browser.
+test/*.test.mjs                       Node: catalogue, scaffold and config checks.
+test/*.integ.test.ts                  Node: the real site, booted locally by Alchemy's test harness, driven over HTTP.
+test/*.browser.test.ts                Browser: page code in a real Chrome (Vitest browser mode), at desktop and phone widths.
 .claude/agents/                       Subagents for each stage of building and presenting a topic.
 ```
 
@@ -113,8 +117,9 @@ First make it work, then make it right.
 - **Data shape first.** Write the topic's `TOPIC.md` claims table before any code: each lesson's claim, the control
   that demonstrates it, and what is measured. If a claim has no control that shows it, it is not a lesson.
 - **TDD.** Write the failing test first, see it fail for the reason you expect, make the smallest change that passes.
-  Server code gets unit tests in `test/`; each lesson's claim gets a step in `test/ui.mjs` that presses the control and
-  checks the measured outcome (for example "parallel total < sequential total").
+  Server code gets tests in `test/<topic>.integ.test.ts`, against the real site booted by Alchemy's test harness; each
+  lesson's claim gets a test there that runs the pattern against that server and checks the measured outcome (for
+  example "parallel total < sequential total"). Page code gets `test/<topic>.browser.test.ts` in Vitest browser mode.
 - **Test behaviour, not implementation.** A test that would still pass if every function returned nothing is worthless.
 - **Check data where it enters.** Parse query strings and bodies once at the edge of `api.js` (see `parseWork`); trust
   them inside. Clamp anything a visitor controls (delays, counts) so a lesson cannot be used to hurt the service.
@@ -140,7 +145,7 @@ patterns as intended; only de-duplicate inside one file.
 5. Write each lesson page to the anatomy above. For complete lessons, see https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl.
 6. `lesson-reviewer` agent: review every page as a senior engineer new to the domain. Fix what it finds.
 7. `session-facilitator` agent: write `topics/<slug>/FACILITATION.md`.
-8. `pnpm test`, `pnpm dev`, `pnpm ui`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
+8. `pnpm run test`, and try it in `pnpm run dev`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
    checks, and on a repository connected to Cloudflare Workers Builds a push to `main` deploys. Open a pull request for
    review; its preview URL is the place to try the topic before it goes live.
 
@@ -153,9 +158,8 @@ do not configure bindings by hand in the dashboard, where the next deploy would 
 
 ```
 pnpm install                      pnpm fetches the Node and pnpm versions set in package.json
-pnpm run test                     unit tests: catalogue, scaffold, topic servers
+pnpm run test                     node checks, the site booted by Alchemy's harness, page code in Chrome
 pnpm run dev                      the site and APIs at http://localhost:8800
-pnpm run ui                       browser walkthrough against BASE (default http://localhost:8800)
 pnpm run new-lesson <topic> <lesson> "Title"
 pnpm run d1:create <name>         create a D1 database once; commit the id it prints into wrangler.jsonc
 pnpm run queues:create <name>     create a queue once

@@ -35,14 +35,14 @@ It comes with:
 
 ## Run it on your laptop
 
-Every topic runs locally from a fresh clone. You need pnpm and nothing else: no Cloudflare account. Install pnpm once
-with `npm install -g pnpm`. pnpm then fetches the Node and pnpm versions set in `package.json` for this project.
+Every topic runs locally from a fresh clone. You need pnpm and Chrome, and nothing else: no Cloudflare account.
+Install pnpm once with `npm install -g pnpm`. pnpm then fetches the Node and pnpm versions set in `package.json` for
+this project.
 
 ```
 pnpm install
-pnpm test
-pnpm dev             # http://localhost:8800
-pnpm ui              # in a second terminal: walks every page in Edge (CHANNEL=chrome for Chrome)
+pnpm run test        # unit checks, the site served locally by Alchemy, the site frame in Chrome
+pnpm run dev         # http://localhost:8800
 ```
 
 Deploying (below) gives a topic its live page on your Lunch & Learn site. It is never required to run one.

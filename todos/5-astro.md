@@ -60,11 +60,9 @@ Pages are prerendered (`export const prerender = true` or `output: "static"` wit
    gets Start here first), never overwrites. Astro has no route generator; this stays ours and gets shorter.
 7. Delete `public/index.html`, `public/<topic>/`, `public/lib/site.js`, `public/topics.json`, `src/index.js`,
    `wrangler.jsonc` (if go), `topics/`.
-8. CI: `pnpm build` then `pnpm test`, then `pnpm ui` against `alchemy dev` (or `astro preview` if it serves the
-   Worker locally; pick whichever the spike showed works logged out). `pnpm ui` starts the dev server itself when
-   `BASE` is unset, waits for it, and stops it after, so CI drops its hand-written "Start the site locally" loop;
-   `BASE=https://... pnpm ui` still checks the live site or a pull-request preview.
-   `.gitignore`: add `.alchemy/`, `dist/`, `.astro/`.
+8. Done in todo 4: `pnpm run test` is Vitest with a node project (unit checks plus Alchemy's test harness booting the
+   site locally) and a browser project (page code in Chrome); `test/ui.mjs` and CI's start-the-server loop are gone;
+   `.gitignore` has `.alchemy/`, `dist/`, `.astro/`. Move any new page code's checks into `*.browser.test.ts`.
 9. Remove `deploy.yml`, `wrangler-action` and the Workers Builds instructions; todo 10 replaces them with an Alchemy
    deploy. CI for tests needs no secrets.
 10. Rewrite `AGENTS.md` Layout, Lesson anatomy paths, "Adding a topic", and Commands for the new structure.
@@ -73,6 +71,6 @@ Pages are prerendered (`export const prerender = true` or `output: "static"` wit
 ## Done when
 
 - Fresh clone, logged out: `pnpm install && pnpm dev` serves home and the sample lesson on :8800, `pnpm test` and
-  `pnpm ui` pass.
+  `pnpm run test` passes.
 - `pnpm new-lesson demo race "The race"` produces a page that builds and shows in the chips.
 - No `public/lib/site.js`, `src/index.js`, `wrangler.jsonc`, or `/<topic>/site/` paths remain.

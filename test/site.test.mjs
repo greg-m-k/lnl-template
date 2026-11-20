@@ -1,10 +1,9 @@
 // The catalogue, the files it points at, the scaffold and the sample topic's server.
-import { test } from "node:test";
+import { test } from "vitest";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { addLesson } from "../scripts/new-lesson.mjs";
 import { handle } from "../topics/sample/api.js";
-import worker from "../src/index.js";
 
 const root = new URL("../", import.meta.url);
 const catalogue = JSON.parse(readFileSync(new URL("public/topics.json", root), "utf8"));
@@ -54,18 +53,6 @@ test("sample api: answers below its topic and reports its own time", async () =>
   assert.equal((await handle(new Request("https://x/sample/api/nope"))).status, 404);
 });
 
-test("site worker: a topic owns everything below /<slug>/: its API, the site frame, its pages", async () => {
-  const env = { ASSETS: { fetch: (r) => new Response(`asset ${new URL(r.url).pathname}`) } };
-  const get = (path) => worker.fetch(new Request(`https://x${path}`), env);
-  assert.equal(await (await get("/sample/lesson/")).text(), "asset /sample/lesson/");
-  assert.equal((await get("/sample/api/hello")).status, 200);
-  assert.equal((await get("/nope/api/x")).status, 404);
-  // The frame has one copy in public/ and is served below every topic, so a hub can forward /<slug>/* alone.
-  assert.equal(await (await get("/sample/site/styles.css")).text(), "asset /styles.css");
-  assert.equal(await (await get("/sample/site/lib/ui.js")).text(), "asset /lib/ui.js");
-  assert.equal(await (await get("/sample/site/topics.json")).text(), "asset /topics.json");
-});
-
 // The Node version is declared once, in package.json; workflows read it from there.
 test("node: package.json declares the version, and every workflow takes it from package.json", () => {
   const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
@@ -99,7 +86,7 @@ test("pnpm: package.json pins it, the lockfile is pnpm's, and no workflow calls 
 // Every command a person or CI runs is a package.json script, so `pnpm run` lists all of them.
 test("scripts: workflows and docs run package.json scripts, never a tool directly", () => {
   const pkg = JSON.parse(readFileSync(new URL("package.json", root), "utf8"));
-  for (const name of ["dev", "test", "ui", "new-lesson", "deploy", "deploy:preview", "login", "d1:create", "queues:create"]) {
+  for (const name of ["dev", "test", "new-lesson", "deploy", "deploy:preview", "login", "d1:create", "queues:create"]) {
     assert.ok(pkg.scripts[name], `script ${name}`);
   }
   const dir = new URL(".github/workflows/", root);

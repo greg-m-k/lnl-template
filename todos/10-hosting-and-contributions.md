@@ -17,7 +17,7 @@ An example is accepted when, on review:
 - It runs from a fresh clone with `pnpm install && pnpm dev`, logged out.
 - Every value a visitor controls is clamped at the edge of the topic's server code (delays, counts, sizes).
 - Visitor data is per tab (session id header) and swept after a set time; switches turn themselves off.
-- It follows `AGENTS.md` (one question, patterns built for real, measured numbers) and passes `pnpm test`, `pnpm ui`.
+- It follows `AGENTS.md` (one question, patterns built for real, measured numbers) and passes `pnpm run test`.
 
 Check what can be checked automatically:
 
@@ -65,7 +65,7 @@ Check what can be checked automatically:
 2. `pnpm new-lesson <topic> start "..."` (or any lesson): creates the topic folder, `topic.json`, `TOPIC.md`, the page
    from the template, and prints the next steps. One script for new topics and new lessons; keep the name
    `new-lesson`, or add a `new-topic` alias if that reads better.
-3. Build it to `AGENTS.md`; `pnpm test`, `pnpm ui`.
+3. Build it to `AGENTS.md`; `pnpm run test`.
 4. Open a pull request. The template (`.github/pull_request_template.md`) holds the acceptance checklist above.
 5. Maintainer reviews; merge deploys.
 
@@ -79,7 +79,8 @@ Write this as a short `CONTRIBUTING.md` and link it from the home page footer ("
 4. `scripts/new-lesson`: print next steps after scaffolding (which files to fill in, which commands to run).
 5. Bootstrap the state store, add secrets, set the domain: **maintainer-only and outward-facing; do it with the
    maintainer, not autonomously.**
-6. First deploy from `main`; run `BASE=https://<domain> pnpm ui` against it.
+6. First deploy from `main`; check it with Alchemy's harness against the deployment (its "run against an existing
+   deployment" pattern: `SKIP_DEPLOY` plus the deployed URL).
 
 ## Done when
 

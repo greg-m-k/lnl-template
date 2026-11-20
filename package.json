@@ -18,9 +18,8 @@
     }
   },
   "scripts": {
-    "dev": "wrangler dev --port 8800",
-    "test": "node --test test/*.test.mjs",
-    "ui": "node --test test/ui.mjs",
+    "dev": "alchemy dev",
+    "test": "vitest run",
     "new-lesson": "node scripts/new-lesson.mjs",
     "login": "wrangler login",
     "deploy": "wrangler deploy",
@@ -29,7 +28,19 @@
     "queues:create": "wrangler queues create"
   },
   "devDependencies": {
-    "playwright-core": "^1.65.1",
+    "@alchemy.run/frontend-frameworks": "2.0.0-beta.87",
+    "@alchemy.run/test": "2.0.0-beta.87",
+    "@effect/vitest": "^4.1.4",
+    "@vitest/browser-playwright": "^5.1.1",
+    "astro": "^7.4.13",
+    "vitest": "^5.1.1",
     "wrangler": "^4.163.0"
+  },
+  "dependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.87",
+    "@effect/platform-bun": "^4.1.4",
+    "@effect/platform-node": "^4.1.4",
+    "alchemy": "2.0.0-beta.87",
+    "effect": "^4.1.4"
   }
 }
