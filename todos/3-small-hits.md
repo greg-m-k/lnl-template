@@ -1,14 +1,5 @@
 # 3. Small hits
 
-Each item is under an hour and independent. Do them after 1 and 2, before the big moves, so every later change is
-linted and formatted.
-
-## Lint and format: oxlint + oxfmt
-
-- devDependencies `oxlint`, `oxfmt`; scripts `lint` (`oxlint && oxfmt --check`) and `format` (`oxfmt`).
-- Run `pnpm format` once in its own commit (formatting only).
-- `pnpm lint` in CI before tests. Same tools as s-petey/lunch-n-learn.
-
 ## Workflow hardening
 
 - Top-level `permissions: contents: read` in `ci.yml`.

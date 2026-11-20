@@ -1,4 +1,4 @@
-# 6. TypeScript
+# 6. TypeScript, then type-aware lint and format
 
 Depends on: 5. Comes before Graffiti and highlighting so their new files are written once, in the final language. **Needs a decision before starting** (see "Open question").
 
@@ -26,9 +26,24 @@ Recommendation: A, with a rule in `AGENTS.md` to keep pattern types minimal (inf
 2. Script `check`: `astro check` (or `tsgo --noEmit` if `astro check` cannot use tsgo yet).
 3. Rename in small commits: `scripts/*.mjs` → `.ts`, `test/*.mjs` → `.ts`, `lib/ui.js` → `ui.ts`,
    topic `server.js` → `server.ts`, then patterns (if A).
-4. CI: `pnpm check` after lint.
-5. Templates in `templates/` and `AGENTS.md` examples in TypeScript.
+4. Templates in `templates/` and `AGENTS.md` examples in TypeScript.
+
+### Lint and format (oxlint + oxfmt), once the code is TypeScript
+
+Moved here from todo 3 so oxlint can run its type-aware rules (they read types through `oxlint-tsgolint`, which
+s-petey/lunch-n-learn also uses).
+
+5. Test first: `package.json` has `lint` (`oxlint ... && oxfmt --check`) and `format` (`oxfmt`) scripts, and CI runs
+   `pnpm run lint` and `pnpm run check` before `pnpm run test`.
+6. `pnpm add -D oxlint oxlint-tsgolint oxfmt`. Turn on type-aware linting (`--type-aware` at the time of writing;
+   confirm the flag and config key in the oxlint docs for the installed version).
+7. `.oxfmtrc.json` as in s-petey/lunch-n-learn: `"singleQuote": true`, `"printWidth": 100`.
+   `.oxlintrc.json`: s-petey/lunch-n-learn extends an `@effect/tsgo` preset; use that only if this repo uses Effect,
+   otherwise oxlint's defaults plus its TypeScript plugin.
+8. Run `pnpm run format` once in its own commit (formatting only). A trial on 2026-11-20, before TypeScript, found 19
+   files to reformat with those settings and no lint findings under oxlint's defaults.
+9. Fix lint findings in separate commits from the formatting.
 
 ## Done when
 
-- `pnpm check` passes in CI; no `.js`/`.mjs` source files left (except patterns under option B).
+- `pnpm run check` and `pnpm run lint` pass in CI; no `.js`/`.mjs` source files left (except patterns under option B).
