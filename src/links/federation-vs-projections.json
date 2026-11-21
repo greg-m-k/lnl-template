@@ -1,0 +1,8 @@
+{
+  "title": "Federated Services vs Event-Driven Projections",
+  "url": "https://lnl.greg.kitchen/start/",
+  "summary": "Reading across three services by asking each one at request time, or from a copy each service keeps up to date with events, on Workers, D1 and Queues.",
+  "source": "https://github.com/greg-m-k/apollo-lnl",
+  "vettedBy": "s-petey",
+  "vettedOn": "2026-11-21"
+}

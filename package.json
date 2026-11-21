@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "alchemy dev",
-    "test": "vitest run",
+    "test": "astro sync && vitest run",
     "check": "astro check",
     "lint": "oxlint && oxfmt --check",
     "format": "oxfmt",

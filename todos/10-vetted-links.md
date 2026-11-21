@@ -1,5 +1,20 @@
 # 10. Vetted links to other Lunch & Learn sites
 
+**Status: done (2026-11-21).**
+
+- `src/content.config.ts`: a `links` collection (glob loader over `src/links/*.json`) with a schema from `astro/zod`,
+  the zod 4 that Astro bundles, so no new dependency. `url` and `source` must be `https:`, `vettedOn` an ISO date,
+  every field required.
+- `src/links/`: the origin site and Greg's two topics, each URL fetched and loading on 2026-11-21. The useEffect
+  README's `https://lnl.greg.kitchen/effects/` returns 404, so the link uses `/effects/start/`.
+- Home: an "Elsewhere" section after the topics, one `a.card.linked` per link (title, summary, host), sorted by title.
+  `rel="noopener"` is left out: it only matters with `target="_blank"`, and links open in the same tab.
+- Test (written first, failed first): the served home has an Elsewhere section after the topics with one card per
+  link file, each linking to its `url`. No schema test: rejecting bad input is zod's job, and the build fails on it.
+- `pnpm run test` runs `astro sync` first. The browser tests render pages with Astro's container, which reads
+  collections from the synced store in `.astro/`; without a sync, home rendered with no links and only a warning.
+- AGENTS.md: "Adding a link", and the new files in the layout table.
+
 Depends on: 5 (Astro collections).
 
 ## Why

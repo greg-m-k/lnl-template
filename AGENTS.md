@@ -46,7 +46,9 @@ src/lib/ui.ts                         Lesson helpers: el, logger, say (a .tag), 
                                       busy. They use Graffiti's classes and tokens only.
 src/lib/highlight.ts                  TanStack Highlight: the TypeScript highlighter and its GitHub light/dark colours.
 src/components/Source.astro           A pattern file on screen, highlighted at build time: <Source code={file} />.
-src/pages/index.astro                 Home: one card per lesson, from site.json.
+src/pages/index.astro                 Home: one card per lesson, from site.json, then one card per vetted link.
+src/links/<slug>.json                 A vetted link to a Lunch & Learn site hosted elsewhere (see "Adding a link").
+src/content.config.ts                 The links collection and its schema.
 src/pages/<topic>/<lesson>.astro      One page per lesson, in the Lesson layout. The first lesson of every topic is start.
 src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to src/topics/<topic>/server.ts, found by folder.
 src/topics/<topic>/server.ts          The topic's real server code: handle(request) returns a Response.
@@ -163,6 +165,29 @@ and bound to the site's `env` there, so local runs and deploys use the same setu
 first use: a local simulator under `pnpm run dev` and the tests, the real resource on deploy. Do not configure bindings
 by hand in the Cloudflare dashboard.
 
+## Adding a link
+
+The home page lists Lunch & Learn sites hosted by other people under "Elsewhere". This site links to them and serves
+none of their code or APIs. A site is eligible when it follows this format (one question, patterns built for real,
+measured numbers) and its source code is public.
+
+A link is one file, `src/links/<slug>.json`, added in a pull request:
+
+```json
+{
+  "title": "Is useEffect a Code Smell?",
+  "url": "https://lnl.greg.kitchen/effects/start/",
+  "summary": "One or two sentences on the question it covers.",
+  "source": "https://github.com/greg-m-k/useeffect-lnl",
+  "vettedBy": "github-handle",
+  "vettedOn": "2026-11-21"
+}
+```
+
+`url` and `source` are `https:` links, and every field is required; `src/content.config.ts` checks this at build time.
+A maintainer opens the site and its source, then merges the pull request. `vettedBy` and `vettedOn` name that
+maintainer and the date; the pull request is the full record.
+
 ## Commands
 
 ```
@@ -170,7 +195,8 @@ pnpm install                      pnpm fetches the Node and pnpm versions set in
 pnpm run lint                     type-aware oxlint, and oxfmt's format check
 pnpm run format                   format every file with oxfmt
 pnpm run check                    type-check every .ts and .astro file
-pnpm run test                     node checks, the site booted by Alchemy's harness, page code in Chrome
+pnpm run test                     syncs Astro's content, then node checks, the site booted by Alchemy's harness, and
+                                  page code in Chrome
 pnpm run dev                      the site and APIs at http://localhost:8800
 pnpm run new-lesson <topic> <lesson> "Title"
 pnpm run login                    connect a Cloudflare account to Alchemy (only needed to deploy)

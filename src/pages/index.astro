@@ -1,9 +1,15 @@
 ---
-// Home: a header, then one section of cards per topic, from src/site.json.
+// Home: a header, then one section of cards per topic, from src/site.json, then the vetted links to sites hosted
+// elsewhere, from src/links/.
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import site from '../site.json';
 
 export const prerender = true;
+
+const links = (await getCollection('links')).toSorted((a, b) =>
+  a.data.title.localeCompare(b.data.title),
+);
 ---
 
 <Base
@@ -45,5 +51,25 @@ export const prerender = true;
         </div>
       </section>
     ))
+  }
+  {
+    links.length > 0 && (
+      <section class="stack" aria-labelledby="elsewhere">
+        <h2 id="elsewhere">Elsewhere</h2>
+        <p>
+          Lunch & Learn sites hosted by other people. A maintainer reviewed each one in a pull request
+          before it was listed here.
+        </p>
+        <div class="layout-card">
+          {links.map((l) => (
+            <a class="card linked" href={l.data.url}>
+              <h3 class="h5">{l.data.title}</h3>
+              <p>{l.data.summary}</p>
+              <p>{new URL(l.data.url).host}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
   }
 </Base>
