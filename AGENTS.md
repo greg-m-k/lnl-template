@@ -18,7 +18,7 @@ coding agents and for the senior engineers who direct them.
 - **Learn by doing.** Each lesson gives the visitor a control (a button, slider or switch) and a prediction to
   make before pressing it. The page shows the outcome; the visitor draws the conclusion.
 - **The code is the content.** Each pattern lives in its own standalone file, readable top to bottom, and the
-  lesson shows that exact file (`showSource`). Duplicated plumbing between patterns is fine and expected.
+  lesson shows that exact file (`<Source>`). Duplicated plumbing between patterns is fine and expected.
   Never extract the pattern under comparison into a shared helper.
 - **Runs locally from a fresh clone. Always.** Anyone who downloads the repository must be able to run every topic on
   their own laptop with `pnpm install` and `pnpm dev`: no Cloudflare account, login, API token or remote resource.
@@ -136,7 +136,7 @@ First make it work, then make it right.
   lesson's claim gets a test there that runs the pattern against that server and checks the measured outcome (for
   example "parallel total < sequential total"). Page code gets `test/<topic>.browser.test.ts` in Vitest browser mode.
 - **Test behaviour, not implementation.** A test that would still pass if every function returned nothing is worthless.
-- **Check data where it enters.** Parse query strings and bodies once at the edge of `api.js` (see `parseWork`); trust
+- **Check data where it enters.** Parse query strings and bodies once at the edge of the topic's `server.ts`; trust
   them inside. Clamp anything a visitor controls (delays, counts) so a lesson cannot be used to hurt the service.
 - **Make operations idempotent.** A visitor will double-click, refresh mid-run and open two tabs.
 - **Isolate visitors.** Anything a visitor creates is theirs alone (a per-tab session id header) and is swept after a
