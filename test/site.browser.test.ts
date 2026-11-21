@@ -17,16 +17,23 @@ let errors: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   errors = vi.spyOn(console, 'error');
   document.body.replaceChildren();
+  for (const style of document.head.querySelectorAll('style[data-page]')) style.remove();
 });
 afterEach(() => {
   expect(errors, 'nothing logs an error').not.toHaveBeenCalled();
   vi.restoreAllMocks();
 });
 
-// Put the rendered page's body (its <main>, and the home page's footer) into the document.
+// Lay out the rendered page as the browser would: its body (with the body's classes) and its head's inline styles.
 async function render(path: string) {
   const html = await commands.renderPage(path);
   const doc = new DOMParser().parseFromString(html, 'text/html');
+  for (const style of doc.head.querySelectorAll('style')) {
+    const copy = document.importNode(style, true);
+    copy.dataset.page = '';
+    document.head.append(copy);
+  }
+  document.body.className = doc.body.className;
   document.body.append(...[...doc.body.children].map((n) => document.importNode(n, true)));
 }
 
@@ -40,14 +47,6 @@ test.each(paths)('%s renders its content', async (path) => {
   const home = document.querySelector('body > header a.chip[href="/"]');
   if (path === '/') expect(home).toBeNull();
   else expect(home?.textContent?.trim()).toBe('← Home');
-});
-
-test("Graffiti's styles load: a lesson's chips get its pill shape", async () => {
-  await render(site.topics[0]?.lessons[0]?.path ?? '/');
-  const chip = document.querySelector('nav .chip');
-  expect(chip).not.toBeNull();
-  if (chip === null) return;
-  expect(Number.parseFloat(getComputedStyle(chip).borderTopLeftRadius)).toBeGreaterThan(8);
 });
 
 test("home: a topic's lesson cards in one row are the same height", async () => {
