@@ -1,0 +1,36 @@
+{
+  "title": "Lunch & Learn",
+  "repo": "https://github.com/greg-m-k/lnl-template",
+  "intro": "A Lunch & Learn is a format, and this page is an invitation to copy it. Take one design question your team keeps arguing about, build every competing answer for real, and run them side by side. Nothing here is mocked: every request you see really happens and every number is measured while you watch. Learn by doing: run it, slow something down, switch something off, and see for yourself what each pattern costs.",
+  "author": {
+    "name": "Your Name",
+    "url": "https://example.com"
+  },
+  "topics": [
+    {
+      "slug": "sample",
+      "emoji": "🧪",
+      "title": "Sample topic",
+      "summary": "A small topic that shows the parts every topic has. Its one pattern sends a single request from the browser to the server and times it while you watch.",
+      "source": "src/topics/sample",
+      "lessons": [
+        {
+          "path": "/sample/start/",
+          "title": "Start here: the problem and the patterns",
+          "chip": "Start here",
+          "blurb": "The question, the one pattern, and the terms the lessons use."
+        },
+        {
+          "path": "/sample/lesson/",
+          "title": "Lesson",
+          "chip": "Lesson",
+          "blurb": "Press Run and watch one request's measured time, the code that ran and what it logged."
+        }
+      ]
+    }
+  ],
+  "origin": {
+    "text": "The format comes from Sam Peterson's Lunch & Learn, the original site of this kind.",
+    "url": "https://lnl.sam-peterson.com"
+  }
+}

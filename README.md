@@ -22,97 +22,50 @@ Nothing is mocked; every number is measured while you watch.
 
 It comes with:
 
-- A site shell: a home page of plain topic cards, lesson pages with a chip menu, and a house style that works on a phone
-  and in dark mode. Topics and lessons are listed once, in `public/topics.json`.
-- Lesson building blocks (`public/lib/ui.js`): measured timelines, consoles, switches, and `showSource` to put the exact
-  pattern code that ran on screen.
-- A placeholder topic, **Sample topic**, showing where everything goes: a Start here page and one lesson page, a
-  placeholder endpoint, and TODO notes. Rename or replace it with your own topic. For complete Lunch & Learns built
-  from this kit, see [apollo-lnl](https://github.com/greg-m-k/apollo-lnl) and [useeffect-lnl](https://github.com/greg-m-k/useeffect-lnl).
+- A site shell built with Astro: a home page of plain topic cards, lesson pages with a chip menu (`src/layouts/`), and a
+  house style that works on a phone and in dark mode. Topics and lessons are listed once, in `src/site.json`.
+- Lesson building blocks (`src/lib/ui.ts`): measured timelines, consoles, status tags and switches. A pattern file is
+  shown on its lesson page, highlighted, with `<Source>`.
+- A small **Sample topic** that shows where everything goes. It has a Start here page and one lesson that runs a
+  request and times it. For complete Lunch & Learns built from this kit, see
+  [apollo-lnl](https://github.com/greg-m-k/apollo-lnl) and [useeffect-lnl](https://github.com/greg-m-k/useeffect-lnl).
 - `AGENTS.md`: the rules and workflow for building a topic, for coding agents and the engineers directing them.
 - Subagents in `.claude/agents/`: `topic-designer`, `pattern-builder`, `lesson-reviewer`, `session-facilitator`.
-- A scaffold: `npm run new-lesson -- <topic> <lesson> "Title"`.
+- A generator: `pnpm run generate` asks for a topic, a lesson and a title, then writes a lesson page that runs, a
+  placeholder pattern and API, and the topic's notes.
 
 ## Run it on your laptop
 
-Every topic runs locally from a fresh clone. You need Node 22 or newer, and nothing else: no Cloudflare account.
+Every topic runs locally from a fresh clone. You need pnpm and Chrome, and nothing else: no Cloudflare account.
+Install pnpm once with `npm install -g pnpm`. pnpm then fetches the Node and pnpm versions set in `package.json` for
+this project.
 
 ```
-npm install
-npm test
-npm run dev          # http://localhost:8800
-npm run ui           # in a second terminal: walks every page in Edge (CHANNEL=chrome for Chrome)
+pnpm install
+pnpm run test        # unit checks, the site served locally by Alchemy, the site frame in Chrome
+pnpm run dev         # http://localhost:8800
 ```
 
-Deploying (below) gives a topic its live page on your Lunch & Learn site. It is never required to run one.
+## How it is put together
 
-## Put it on Cloudflare
-
-The whole kit is one Cloudflare Worker: it serves `public/` and answers each topic's `/<topic>/api/...`. The free plan is
-enough. Topics that need more (D1 databases, Queues, Durable Objects) add them to `wrangler.jsonc` and they deploy the
-same way.
-
-### 1. Make it yours
-
-In `wrangler.jsonc`, change `"name": "lnl"` to a Worker name that is unique in your Cloudflare account. In
-`public/topics.json`, set `"repo"` to your repository's URL so each topic links to its source, and `"author"` to
-your name and site for the footer credit. Commit and push.
-
-### 2. Connect the repository (recommended: Workers Builds)
-
-Cloudflare builds and deploys straight from GitHub. There are no API tokens to create and no secrets to store in GitHub.
-
-1. In the Cloudflare dashboard: **Workers & Pages > Create > Import a repository**.
-2. **Connect GitHub** and install the Cloudflare GitHub app. Give it access to this repository only.
-3. Pick the repository and set:
-   - **Project name**: exactly the `name` in `wrangler.jsonc`.
-   - **Build command**: `npm test` (a failing test stops the deploy).
-   - **Deploy command**: `npx wrangler deploy`.
-   - **Non-production branch deploy command**: `npx wrangler versions upload`.
-4. **Deploy**.
-
-From then on, every push to `main` deploys, and every other branch gets its own preview URL, which is posted on its pull
-request. Builds and logs are under the Worker's **Deployments** tab.
-
-### 3. Your own domain (optional)
-
-In `wrangler.jsonc`, uncomment `routes` and set your hostname (`lnl.example.com`) with `"custom_domain": true`. The
-domain's zone must be on the same Cloudflare account. The next deploy creates the DNS record and certificate.
+The site is one Astro project that runs as a Cloudflare Worker. `alchemy.run.ts` declares it, and any Cloudflare
+resources a topic needs (D1 databases, Queues, Durable Objects) are added there as code. `pnpm run dev` runs all of it
+on your machine with [Alchemy](https://alchemy.run), in Cloudflare's own Workers runtime, so no account is needed.
 
 ### Continuous integration
 
-`.github/workflows/ci.yml` runs on every push and pull request: `npm test`, then `wrangler dev` and the browser
-walkthrough of every page in Chrome. It needs no secrets. Turn on branch protection for `main` and require the `ci`
-check, so nothing merges, and therefore nothing deploys, unless every lesson still works.
+`.github/workflows/ci.yml` runs `pnpm run test` on every pull request and every push to `main`. It needs no secrets.
+Turn on branch protection for `main` and require the `ci` check, so nothing merges unless every lesson still works.
 
-### Deploying from GitHub Actions instead
+### Hosting your own copy
 
-If you cannot install the Cloudflare GitHub app, use `.github/workflows/deploy.yml`. It is off until you opt in:
+Running locally never needs Cloudflare. To host your own copy:
 
-1. Create an API token in Cloudflare (**My Profile > API Tokens > Create Token > "Edit Cloudflare Workers"**).
-2. In GitHub, **Settings > Secrets and variables > Actions**: add secrets `CLOUDFLARE_API_TOKEN` and
-   `CLOUDFLARE_ACCOUNT_ID`, and a variable `DEPLOY_WITH_ACTIONS` = `true`.
-
-Use one deploy path, not both.
-
-### From your laptop
-
-`npx wrangler login`, then `npm run deploy`.
-
-## Mount a topic on another Lunch & Learn site
-
-Each topic lives entirely below its own path (`/sample/...` for the placeholder): its pages, its API and the site frame
-it uses. So a topic deployed from this repository can also appear on another Lunch & Learn site, next to that site's
-own topics. On the other site:
-
-1. Bind this Worker as a service, in its `wrangler.jsonc`:
-   `"services": [{ "binding": "SAMPLE", "service": "<this Worker's name>" }]`.
-2. Forward the topic's path to it, in its Worker:
-   `if (url.pathname.startsWith("/sample/")) return env.SAMPLE.fetch(request);`
-   and add `"/sample/*"` to its `run_worker_first`.
-3. List the topic and its lessons in its `topics.json`, so its home page shows the cards.
-
-lnl.greg.kitchen serves the useEffect topic this way, from its own repository, below `/effects/`.
+1. In `src/site.json`, set `"repo"` to your repository's URL so each topic links to its source, and `"author"` to your
+   name and site for the footer credit.
+2. In `alchemy.run.ts`, replace `Alchemy.localState()` with `Cloudflare.state()`, as its comment says.
+3. `pnpm run login` connects your Cloudflare account; `pnpm run deploy` deploys. `pnpm run destroy` removes it again.
+   (Plain `pnpm deploy` is a different, built-in pnpm command.)
 
 ## Make a topic
 
@@ -122,5 +75,5 @@ Read `AGENTS.md`, then follow "Adding a topic, step by step". With Claude Code:
 > Use the topic-designer agent: our team argues about retrying failed calls vs failing fast.
 ```
 
-Replace the placeholder topic (`public/sample/`, `topics/sample/`, its entry in `public/topics.json` and `src/index.js`, and
-the sample checks in `test/`) with your own.
+Replace the placeholder topic (`src/pages/sample/`, `src/topics/sample/`, its entry in `src/site.json`, and the sample
+checks in `test/`) with your own.

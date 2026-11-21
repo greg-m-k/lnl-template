@@ -1,0 +1,8 @@
+{
+  "title": "Is useEffect a Code Smell?",
+  "url": "https://lnl.greg.kitchen/effects/start/",
+  "summary": "Each common misuse of React's useEffect next to its fix, in real React against a real server, measured.",
+  "source": "https://github.com/greg-m-k/useeffect-lnl",
+  "vettedBy": "s-petey",
+  "vettedOn": "2026-11-21"
+}

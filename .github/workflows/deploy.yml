@@ -1,27 +1,47 @@
-# Optional deploy from GitHub Actions, for teams that cannot use Cloudflare Workers Builds.
-# Off by default so it never deploys twice. To use it:
-#   1. Settings > Secrets and variables > Actions > Secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
-#      (token template "Edit Cloudflare Workers").
-#   2. Settings > Secrets and variables > Actions > Variables: DEPLOY_WITH_ACTIONS = true
+# Deploys the site with Alchemy: main to the prod stage, and each pull request to a pr-<number> preview that is
+# destroyed when the pull request closes. It deploys only once the CLOUDFLARE_API_TOKEN secret is set (CONTRIBUTING.md,
+# "Hosting the site"), so a copy of this template deploys nothing.
 name: deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch:
-concurrency: deploy
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+permissions:
+  contents: read
+# Deploys to one stage run one at a time and are never cancelled half way.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  DO_NOT_TRACK: '1' # Alchemy's CLI sends usage telemetry unless this is set
+  ALCHEMY_STAGE: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'prod' }}
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 jobs:
   deploy:
-    if: vars.DEPLOY_WITH_ACTIONS == 'true'
+    # Pull requests from forks get no secrets, so they are not deployed.
+    if: github.event.action != 'closed' && !github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v3
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm test
-      - uses: cloudflare/wrangler-action@v3
+          cache: true
+          require-lockfile: true
+      - if: env.CLOUDFLARE_API_TOKEN != ''
+        run: pnpm run deploy --yes
+
+  cleanup:
+    if: github.event.action == 'closed' && !github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          cache: true
+          require-lockfile: true
+      - if: env.CLOUDFLARE_API_TOKEN != ''
+        run: pnpm run destroy --yes

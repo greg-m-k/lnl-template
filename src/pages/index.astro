@@ -1,0 +1,82 @@
+---
+// Home: a header, then one section of cards per topic, from src/site.json, then the vetted links to sites hosted
+// elsewhere, from src/links/.
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import site from '../site.json';
+
+export const prerender = true;
+
+const links = (await getCollection('links')).toSorted((a, b) =>
+  a.data.title.localeCompare(b.data.title),
+);
+---
+
+<Base
+  title={site.title}
+  description="Interactive Lunch & Learn lessons: competing patterns, really running, side by side."
+>
+  <header class="stack">
+    <h1>{site.title}</h1>
+    <p>{site.intro}</p>
+    <p>
+      {site.origin.text} <a href={site.origin.url}>{new URL(site.origin.url).host}</a>.
+    </p>
+  </header>
+  {
+    site.topics.map((t) => (
+      <section class="stack" aria-labelledby={`topic-${t.slug}`}>
+        <h2 id={`topic-${t.slug}`}>
+          <span aria-hidden="true">{t.emoji}</span> {t.title}
+        </h2>
+        <p>
+          {t.summary}{' '}
+          {site.repo ? (
+            <span>
+              <a href={`${site.repo}/tree/main/${t.source}`}>The source for this topic is on GitHub</a>.
+            </span>
+          ) : (
+            <span>
+              The source for this topic is in <code>{t.source}</code>.
+            </span>
+          )}
+        </p>
+        <div class="layout-card">
+          {t.lessons.map((l) => (
+            <a class="card linked" href={l.path}>
+              <h3 class="h5">{l.title}</h3>
+              <p>{l.blurb}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+  {
+    links.length > 0 && (
+      <section class="stack" aria-labelledby="elsewhere">
+        <h2 id="elsewhere">Elsewhere</h2>
+        <p>
+          Lunch & Learn sites hosted by other people. A maintainer reviewed each one in a pull request
+          before it was listed here.
+        </p>
+        <div class="layout-card">
+          {links.map((l) => (
+            <a class="card linked" href={l.data.url}>
+              <h3 class="h5">{l.data.title}</h3>
+              <p>{l.data.summary}</p>
+              <p>{new URL(l.data.url).host}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+  <section class="stack" aria-labelledby="contribute">
+    <h2 id="contribute">Add an example, or host your own</h2>
+    <p>
+      How to add an example by pull request, and how to host your own copy of this site, is in our{' '}
+      <a href={`${site.repo}/blob/main/CONTRIBUTING.md`}>CONTRIBUTING.md</a>.
+    </p>
+  </section>
+</Base>

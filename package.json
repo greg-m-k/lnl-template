@@ -3,14 +3,54 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --port 8800",
-    "test": "node --test test/*.test.mjs",
-    "ui": "node --test test/ui.mjs",
-    "new-lesson": "node scripts/new-lesson.mjs",
-    "deploy": "wrangler deploy"
+    "dev": "alchemy dev",
+    "test": "astro sync && vitest run",
+    "check": "astro check",
+    "lint": "oxlint && oxfmt --check",
+    "format": "oxfmt",
+    "generate": "node scripts/generate.ts",
+    "login": "alchemy profile edit --add Cloudflare",
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy",
+    "state:bootstrap": "alchemy state bootstrap",
+    "sync": "astro sync"
+  },
+  "dependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.87",
+    "@drop-in/graffiti": "4.30.0",
+    "@effect/platform-node": "^4.1.4",
+    "@tanstack/highlight": "1.2.12",
+    "alchemy": "2.0.0-beta.87",
+    "effect": "^4.1.4"
   },
   "devDependencies": {
-    "playwright-core": "^1.65.1",
-    "wrangler": "^4.163.0"
+    "@alchemy.run/frontend-frameworks": "2.0.0-beta.87",
+    "@alchemy.run/test": "2.0.0-beta.87",
+    "@astrojs/check": "^0.9.12",
+    "@effect/vitest": "^4.1.4",
+    "@types/node": "^26.6.6",
+    "@vitest/browser-playwright": "^5.1.1",
+    "astro": "^7.4.13",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "oxlint-tsgolint": "^7.0.2007",
+    "typescript": "^6.0.3",
+    "vite": "8.3.8",
+    "vitest": "^5.1.1"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.4.0",
+      "onFail": "download"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "^26.8.0",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=26.8.0"
   }
 }

@@ -1,0 +1,12 @@
+---
+// Inline code in a sentence, highlighted at build time: <Code lang="html" code={'<span class="tag">'} />.
+import { highlightInline } from '../lib/highlight.ts';
+
+interface Props {
+  code: string;
+  lang: 'html' | 'ts';
+}
+const { code, lang } = Astro.props;
+---
+
+<code set:html={highlightInline(code, lang)} />
