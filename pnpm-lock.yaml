@@ -178,6 +178,9 @@ importers:
       '@effect/platform-node':
         specifier: ^4.1.4
         version: 4.1.4(effect@4.1.4)(redis@6.3.1)
+      '@tanstack/highlight':
+        specifier: 1.2.12
+        version: 1.2.12
       alchemy:
         specifier: 2.0.0-beta.87
         version: 2.0.0-beta.87(@alchemy.run/frontend-frameworks@2.0.0-beta.87(@effect/platform-bun@4.1.4(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.3.1))(@types/node@26.6.6)(astro@7.4.13(@types/node@26.6.6)(esbuild@0.28.2)(yaml@2.9.1))(effect@4.1.4)(typescript@6.0.3)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(yaml@2.9.1)))(@effect/platform-bun@4.1.4(effect@4.1.4))(@effect/platform-node@4.1.4(effect@4.1.4)(redis@6.3.1))(effect@4.1.4)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(yaml@2.9.1))(ws@8.23.0)
@@ -1793,6 +1796,10 @@ packages:
     resolution: {integrity: sha512-wgKggnhZVL9Bfx1OaKKTrYY9BFRk6C8UAkQNUcIv1+llzYrIqy+RZm5HPKzn0NpEBvTVhTqB4kQyllZywsRBRQ==}
     peerDependencies:
       acorn: ^8.9.0
+
+  '@tanstack/highlight@1.2.12':
+    resolution: {integrity: sha512-5QTL7DhqmzcVFVZhQmdrZyywI2L6hy0MX/lU1BJJarDrs7lARJnmt10MkZ9qHiPri8FSiHOtfjRSGnHOd6xnpw==}
+    engines: {node: '>=18'}
 
   '@tybys/wasm-util@0.10.5':
     resolution: {integrity: sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==}
@@ -4372,6 +4379,8 @@ snapshots:
   '@sveltejs/acorn-typescript@1.0.13(acorn@8.19.0)':
     dependencies:
       acorn: 8.19.0
+
+  '@tanstack/highlight@1.2.12': {}
 
   '@tybys/wasm-util@0.10.5':
     dependencies:

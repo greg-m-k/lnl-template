@@ -1,0 +1,12 @@
+---
+// A pattern's source file on screen, highlighted when the page is built. Pass the file's own text (import it with
+// ?raw), so the code on screen is the code that runs.
+import { highlighter } from '../lib/highlight.ts';
+
+interface Props {
+  code: string;
+}
+const { code } = Astro.props;
+---
+
+<Fragment set:html={highlighter.highlight(code, { lang: 'ts' }).html} />

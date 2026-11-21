@@ -42,7 +42,10 @@ src/site.json                         The catalogue: site intro, topics, lessons
 src/layouts/Base.astro                Every page: one Graffiti .layout-readable column (header, main, footer).
 src/layouts/Lesson.astro              A lesson: its topic's chips in the header, then a Next link, from site.json.
 src/styles/theme.css                  Imports Graffiti's full bundle. Nothing else: there is no custom CSS.
-src/lib/ui.ts                         Lesson helpers: el, logger, say, press/pressed, timeline, showSource, busy.
+src/lib/ui.ts                         Lesson helpers: el, logger, say (a .tag), press/pressed, timeline (an SVG chart),
+                                      busy. They use Graffiti's classes and tokens only.
+src/lib/highlight.ts                  TanStack Highlight: the TypeScript highlighter and its GitHub light/dark colours.
+src/components/Source.astro           A pattern file on screen, highlighted at build time: <Source code={file} />.
 src/pages/index.astro                 Home: one card per lesson, from site.json.
 src/pages/<topic>/<lesson>.astro      One page per lesson, in the Lesson layout. The first lesson of every topic is start.
 src/pages/[topic]/api/[...path].ts    /<topic>/api/... goes to src/topics/<topic>/server.ts, found by folder.
@@ -67,12 +70,15 @@ Every lesson page has the same shape, so a room can follow it on a projector:
 1. **Header and chips** (drawn by the layouts): a "← Home" chip (on every page but home), then every lesson in the
    topic as a Graffiti `.chip`, the current one `.selected`.
 2. **h1**: the lesson's question in plain words ("When a service goes down").
-3. **Lead paragraph**: the situation, each pattern in one sentence with its name in its colour
-   (`<strong data-color="blue">`), what to try, and "New to these terms? Start here".
-4. **Control panel** (`.card`, its controls in a `.cluster`): the run button, a status line (`.tag`), the sliders
-   and switches, and one line suggesting what to try and asking for a prediction.
-5. **One panel per pattern, side by side** (`.layout-card` > `.card[data-color]`): a one-line description, the
-   measured timeline, the code that ran, the answer, the console. Same order in every panel.
+3. **Lead paragraph**: the situation, each pattern in one sentence with its name as a Graffiti tag in its colour
+   (`<span class="tag" style="--tag-color: var(--blue)">Sequential</span>`), what to try, and "New to these terms?
+   Start here".
+4. **Control panel** (`.card`, its controls in a `.cluster`): the run button, a status line (`say()`, a `.tag`), the
+   sliders and switches, and one line suggesting what to try and asking for a prediction.
+5. **One panel per pattern, side by side** (`.layout-card` > `.card`, headed by the pattern's tag): a one-line
+   description, the measured timeline (`timeline()`, bars in the pattern's colour), the code that ran
+   (`<Source code={...} />` with the pattern file imported `?raw`), the answer, the console (`.log-card` > `pre`, via
+   `logger()`). Same order in every panel.
 6. **Insight callout** (Graffiti `.callout`): what the run showed and when the "losing" pattern is still the right
    choice.
 7. **Next link and footer** (drawn by the layouts).
@@ -80,7 +86,7 @@ Every lesson page has the same shape, so a room can follow it on a projector:
 A **Start here** page opens each topic: the problem, then for each pattern what it does, a small diagram in a
 `<pre>`, what you get, what it costs, then a glossary (`<dl>`) of every term.
 
-Each pattern keeps one colour across the whole topic: `blue`, `green`, `purple` or `orange`.
+Each pattern keeps one Graffiti hue across the whole topic: `blue`, `green`, `purple` or `orange`.
 
 ## Writing
 

@@ -22,9 +22,8 @@ dependency on `@humanspeak/svelte-markdown` (Svelte comes with it into `node_mod
   a line break between text and an element; written as `{' '}`). Present since todo 5.
 - Tests: the stylesheet test above; a browser test checks Graffiti's styles applied (chip pill shape; failed with
   Graffiti removed), the Home chip on every page but home, the footer credit, card heights and 390px width.
-- Left for later (outside CSS): AGENTS.md's lesson anatomy still says to colour pattern names with
-  `<strong data-color>`, which nothing styles now; `src/lib/ui.ts` still writes old widget classes (`.status`,
-  `.lane`, `.track`, `.seg`) that have no CSS.
+- Left for later (outside CSS), and done with todo 9: AGENTS.md's `<strong data-color>` guidance and the dead widget
+  classes in `src/lib/ui.ts` (`.status`, `.lane`, `.track`, `.seg`).
 
 Depends on: 5 (Astro layouts). Comes before 9, which maps the code theme onto Graffiti's tokens.
 

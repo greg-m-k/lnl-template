@@ -56,6 +56,7 @@ export function addLesson(
 
 const attr = (s: string) => s.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
 const page = (title: string) => `---
+import Code from '../../components/Code.astro';
 import Lesson from '../../layouts/Lesson.astro';
 
 export const prerender = true;
@@ -65,7 +66,8 @@ export const prerender = true;
   <h1>${title}</h1>
   <p>
     TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with{' '}
-    <code>&lt;strong data-color="..."&gt;</code>), what to try, and a link back to Start here for the terms.
+    <Code lang="html" code={'<span class="tag" style="--tag-color: var(--blue)">'} />), what to try, and a link
+    back to Start here for the terms.
   </p>
   <!-- See AGENTS.md "Lesson anatomy". Complete lessons: https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl. -->
 </Lesson>
