@@ -22,7 +22,8 @@ coding agents and for the senior engineers who direct them.
   Never extract the pattern under comparison into a shared helper.
 - **Runs locally from a fresh clone. Always.** Anyone who downloads the repository must be able to run every topic on
   their own laptop with `pnpm install` and `pnpm dev`: no Cloudflare account, login, API token or remote resource.
-  Use only what `alchemy dev` runs locally (Workers, static assets, D1, Queues, Durable Objects, service bindings).
+  Use only what `alchemy dev` runs locally (Workers, static assets, KV, D1, Queues, Durable Objects, service
+  bindings); a test in `test/site.integ.test.ts` fails on anything else.
   Never add something that only works deployed (Workers AI, Vectorize, Browser Rendering and the like) unless the topic
   also has a local path. Deploying is also required, but only so the topic has a live page on the LnL site; it is never
   the only way to run it.
@@ -62,6 +63,9 @@ tsconfig.json                         Astro's strict TypeScript; pnpm run check 
 test/*.test.ts                        Node: catalogue, scaffold and config checks.
 test/*.integ.test.ts                  Node: the real site, booted locally by Alchemy's test harness, driven over HTTP.
 test/*.browser.test.ts                Browser: page code in a real Chrome (Vitest browser mode), at desktop and phone widths.
+.github/workflows/ci.yml              Lint, check and test on every push and pull request.
+.github/workflows/deploy.yml          Deploys main and same-repo pull request previews, once the Cloudflare secrets are set.
+CONTRIBUTING.md                       Adding an example by pull request, what gets accepted, and hosting the site.
 .claude/agents/                       Subagents for each stage of building and presenting a topic.
 ```
 
@@ -202,6 +206,7 @@ pnpm run new-lesson <topic> <lesson> "Title"
 pnpm run login                    connect a Cloudflare account to Alchemy (only needed to deploy)
 pnpm run deploy                   deploy (ask first)
 pnpm run destroy                  remove a deployment (ask first)
+pnpm run state:bootstrap          create the Cloudflare state store once, before CI deploys (ask first)
 ```
 
 ## Glossary of this kit

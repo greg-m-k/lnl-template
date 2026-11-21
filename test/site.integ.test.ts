@@ -4,8 +4,10 @@ import * as Cloudflare from '@alchemy.run/cloudflare';
 import * as Test from '@alchemy.run/test/Vitest';
 import { expect } from '@effect/vitest';
 import * as Alchemy from 'alchemy';
+import { exportState, isResourceState } from 'alchemy/State';
 import * as Effect from 'effect/Effect';
 import * as HttpClient from 'effect/http/HttpClient';
+import * as Schema from 'effect/Schema';
 import Stack from '../alchemy.run.ts';
 import site from '../src/site.json';
 
@@ -37,6 +39,32 @@ const links = Object.values(
 );
 const credit = `Made by <a href="${site.author.url}">${site.author.name}</a>.`;
 
+// What the hosted site may use from Cloudflare: products that run under `alchemy dev` with no account, and fit the
+// Workers free plan (AGENTS.md, "Runs locally from a fresh clone"). Durable Objects are bindings, not resources.
+const freeResources = new Set([
+  'Cloudflare.Worker',
+  'Cloudflare.KV.Namespace',
+  'Cloudflare.D1Database',
+  'Cloudflare.Queues.Queue',
+  'Cloudflare.Queues.Consumer',
+]);
+const freeBindings = new Set([
+  'assets',
+  'kv_namespace',
+  'd1',
+  'queue',
+  'durable_object_namespace',
+  'service',
+  'plain_text',
+  'secret_text',
+  'json',
+  'version_metadata',
+]);
+// A resource's bindings, as Alchemy records them in state.
+const Bindings = Schema.Struct({
+  bindings: Schema.optional(Schema.Array(Schema.Struct({ type: Schema.String }))),
+});
+
 test(
   'home: one section per topic, one card per lesson, credits the origin and the author',
   Effect.gen(function* () {
@@ -61,6 +89,20 @@ test(
     expect(page.lastIndexOf('aria-labelledby="topic-')).toBeLessThan(page.indexOf(elsewhere ?? ''));
     expect(elsewhere?.match(/<a class="card\b[^"]*"/g)).toHaveLength(links.length);
     for (const l of links) expect(elsewhere, l.url).toContain(`href="${l.url}"`);
+  }),
+  { timeout: 120_000 },
+);
+
+test(
+  'home: a last section links to CONTRIBUTING.md in the repository',
+  Effect.gen(function* () {
+    const page = yield* html('/');
+    const section = page.match(
+      /<section [^>]*aria-labelledby="contribute"[\s\S]*?<\/section>/,
+    )?.[0];
+    expect(section, 'an Add an example section').toBeDefined();
+    expect(section).toContain(`href="${site.repo}/blob/main/CONTRIBUTING.md"`);
+    expect(page.lastIndexOf('<section ')).toBe(page.indexOf(section ?? ''));
   }),
   { timeout: 120_000 },
 );
@@ -99,6 +141,25 @@ test(
       expect(text, path).not.toMatch(/\bNeither\b|, not (a|an|the) |is the lesson|slide's word/);
     }
   }),
+  { timeout: 120_000 },
+);
+
+test(
+  'the deployed stack uses only free-plan Cloudflare products that run locally',
+  Effect.gen(function* () {
+    yield* stack;
+    const { resources } = yield* exportState({ stack: 'lnl' });
+    const deployed = resources.map((r) => r.state).filter(isResourceState);
+    expect(deployed.length).toBeGreaterThan(0);
+    for (const r of deployed) {
+      expect(freeResources, `${r.fqn} is a ${r.resourceType}`).toContain(r.resourceType);
+      for (const b of r.bindings) {
+        for (const { type } of Schema.decodeUnknownSync(Bindings)(b.data).bindings ?? []) {
+          expect(freeBindings, `${r.fqn} has a ${type} binding`).toContain(type);
+        }
+      }
+    }
+  }).pipe(Effect.provide(Alchemy.localState())),
   { timeout: 120_000 },
 );
 

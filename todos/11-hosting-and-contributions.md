@@ -1,5 +1,24 @@
 # 11. Hosting the site, and taking examples by pull request
 
+**Status: done (2026-11-21). The maintainer steps in CONTRIBUTING.md, "Hosting the site", are not done.**
+
+- Free-plan test (written first, failed first on a Workers AI binding added to the site): after the harness deploys
+  the stack, `test/site.integ.test.ts` reads Alchemy's state (`exportState` from `alchemy/State`) and fails on any
+  resource type or Worker binding type outside the list. Astro's sessions add a KV namespace, so KV is on the list
+  (and in AGENTS.md). No export from `alchemy.run.ts` was needed.
+- `.github/workflows/deploy.yml`, separate from an unchanged `ci.yml`, shaped like Alchemy's CI guide: `deploy` and
+  `cleanup` jobs whose deploy and destroy steps run only when the `CLOUDFLARE_API_TOKEN` secret is set, so the
+  template and its copies deploy nothing.
+  Fork pull requests are skipped. The stage comes from `ALCHEMY_STAGE` (`prod` or `pr-<n>`); the commands are
+  `pnpm run deploy --yes` and `pnpm run destroy --yes`. Deploys do not wait for `ci`; branch protection on `main`
+  (CONTRIBUTING.md) keeps a failing change from merging.
+- `CONTRIBUTING.md`, `.github/pull_request_template.md`. The home page ends with an "Add an example" section linking
+  to `CONTRIBUTING.md` at `repo` in `src/site.json`, now set to this repository.
+- `new-lesson` prints the next steps; `pnpm run state:bootstrap` added for the maintainer.
+- Skipped: the optional `GitHub.Comment` preview-URL comment (needs `@alchemy.run/github` and `pull-requests: write`).
+- State, as decided in todo 4: the template keeps `Alchemy.localState()`; whoever hosts a copy replaces it with
+  `Cloudflare.state()` themselves (the comment in `alchemy.run.ts`, CONTRIBUTING.md step 1). No conditional.
+
 Depends on: 4, 5 (Alchemy + Astro). Uses the scaffold from 5.
 
 ## Why
@@ -30,8 +49,6 @@ Check what can be checked automatically:
 
 1. The maintainer replaces `Alchemy.localState()` with `Cloudflare.state()` in `alchemy.run.ts`, as its comment says,
    and bootstraps the store once: `alchemy state bootstrap --profile <ci-profile>` (CI refuses to create it).
-   Note for that change: per Alchemy's docs, `alchemy dev` against `Cloudflare.state()` also looks for the store on
-   the account, so check during todo 4 whether a contributor's logged-out `pnpm dev` still works afterwards.
 2. Write the deploy workflow ourselves from Alchemy's CI guide (`website/src/content/docs/environments/ci.mdx`,
    pnpm variant), not the `alchemy-run/alchemy` action. That action (`action.yml`) is a ~80-line composite that only
    picks a stage (`prod` on `main`, `staging-<n>` on a pull request) and runs `alchemy deploy|destroy --stage ... --yes`;

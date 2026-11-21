@@ -11,7 +11,8 @@
     "new-lesson": "node scripts/new-lesson.ts",
     "login": "alchemy profile edit --add Cloudflare",
     "deploy": "alchemy deploy",
-    "destroy": "alchemy destroy"
+    "destroy": "alchemy destroy",
+    "state:bootstrap": "alchemy state bootstrap"
   },
   "dependencies": {
     "@alchemy.run/cloudflare": "2.0.0-beta.87",

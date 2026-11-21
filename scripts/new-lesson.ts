@@ -145,6 +145,13 @@ function main([topic, lesson, title]: string[]) {
     stdio: 'inherit',
   });
   console.log(['src/site.json', ...written].map((f) => `wrote ${f}`).join('\n'));
+  console.log(`
+Next (AGENTS.md, "Adding a topic, step by step"):
+${isNewTopic ? `  - Write the question, patterns, glossary and claims table in src/topics/${topic}/TOPIC.md.\n` : ''}\
+  - Fill in the TODOs in src/site.json: the topic's title, emoji and summary, and each lesson's blurb.
+  - Build each pattern in src/topics/${topic}/patterns/ and the server code in src/topics/${topic}/server.ts, test first.
+  - Write src/pages/${topic}/${lesson}.astro to the lesson anatomy.
+  - pnpm run dev to try it, then pnpm run lint, pnpm run check and pnpm run test before a pull request.`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main(process.argv.slice(2));
