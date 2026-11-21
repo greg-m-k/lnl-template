@@ -27,6 +27,7 @@ jobs:
         with:
           cache: true
           require-lockfile: true
+      - run: pnpm run sync
       - run: pnpm run lint
       - run: pnpm run check
       - run: pnpm run test
