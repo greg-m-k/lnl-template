@@ -1,5 +1,4 @@
 ---
-import Code from '../../components/Code.astro';
 import Lesson from '../../layouts/Lesson.astro';
 
 export const prerender = true;
@@ -7,10 +6,18 @@ export const prerender = true;
 
 <Lesson title="Start here: the problem and the patterns">
   <h1>Start here: the problem and the patterns</h1>
+  <!-- See AGENTS.md "Lesson anatomy". Complete topics: https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl. -->
   <p>
-    TODO: the question this lesson answers, both patterns in one sentence each (name them, colour them with{' '}
-    <Code lang="html" code={'<span class="tag" style="--tag-color: var(--blue)">'} />), what to try, and a link
-    back to Start here for the terms.
+    Every topic opens with this page. It states the question, explains each pattern with a small diagram, says what
+    each pattern gives you and what it costs, and defines the terms the lessons use. This sample has one pattern,
+    called <span class="tag" style="--tag-color: var(--blue)">Example</span>, which sends one request from the
+    browser to the server and times it.
   </p>
-  <!-- See AGENTS.md "Lesson anatomy". Complete lessons: https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl. -->
+  <pre>browser ──GET /sample/api/hello──▶ server</pre>
+  <dl>
+    <dt>Pattern</dt>
+    <dd>One complete answer to the topic's question, built and run for real.</dd>
+    <dt>Round trip</dt>
+    <dd>The time from sending a request until its answer arrives.</dd>
+  </dl>
 </Lesson>

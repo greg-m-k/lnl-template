@@ -11,20 +11,20 @@
       "slug": "sample",
       "emoji": "🧪",
       "title": "Sample topic",
-      "summary": "TODO: the design question in one or two sentences, and what the lessons measure.",
+      "summary": "A small topic that shows the parts every topic has. Its one pattern sends a single request from the browser to the server and times it while you watch.",
       "source": "src/topics/sample",
       "lessons": [
         {
           "path": "/sample/start/",
           "title": "Start here: the problem and the patterns",
           "chip": "Start here",
-          "blurb": "TODO: what the reader will understand after this page."
+          "blurb": "The question, the one pattern, and the terms the lessons use."
         },
         {
           "path": "/sample/lesson/",
           "title": "Lesson",
           "chip": "Lesson",
-          "blurb": "TODO: one sentence on what the reader will do and see."
+          "blurb": "Press Run and watch one request's measured time, the code that ran and what it logged."
         }
       ]
     }
