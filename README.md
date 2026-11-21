@@ -24,14 +24,15 @@ It comes with:
 
 - A site shell built with Astro: a home page of plain topic cards, lesson pages with a chip menu (`src/layouts/`), and a
   house style that works on a phone and in dark mode. Topics and lessons are listed once, in `src/site.json`.
-- Lesson building blocks (`src/lib/ui.ts`): measured timelines, consoles, switches, and `showSource` to put the exact
-  pattern code that ran on screen.
-- A placeholder topic, **Sample topic**, showing where everything goes: a Start here page and one lesson page, a
-  placeholder endpoint, and TODO notes. Rename or replace it with your own topic. For complete Lunch & Learns built
-  from this kit, see [apollo-lnl](https://github.com/greg-m-k/apollo-lnl) and [useeffect-lnl](https://github.com/greg-m-k/useeffect-lnl).
+- Lesson building blocks (`src/lib/ui.ts`): measured timelines, consoles, status tags and switches. A pattern file is
+  shown on its lesson page, highlighted, with `<Source>`.
+- A small **Sample topic** that shows where everything goes. It has a Start here page and one lesson that runs a
+  request and times it. For complete Lunch & Learns built from this kit, see
+  [apollo-lnl](https://github.com/greg-m-k/apollo-lnl) and [useeffect-lnl](https://github.com/greg-m-k/useeffect-lnl).
 - `AGENTS.md`: the rules and workflow for building a topic, for coding agents and the engineers directing them.
 - Subagents in `.claude/agents/`: `topic-designer`, `pattern-builder`, `lesson-reviewer`, `session-facilitator`.
-- A scaffold: `pnpm run new-lesson <topic> <lesson> "Title"`.
+- A generator: `pnpm run generate` asks for a topic, a lesson and a title, then writes a lesson page that runs, a
+  placeholder pattern and API, and the topic's notes.
 
 ## Run it on your laptop
 

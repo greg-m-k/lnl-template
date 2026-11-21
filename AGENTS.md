@@ -57,7 +57,7 @@ src/topics/<topic>/patterns/<p>.ts    Browser-side pattern code, one standalone 
                                       minimal (let them be inferred): the file is what visitors read on screen.
 src/topics/<topic>/TOPIC.md           The question, the patterns, the glossary, and the claim each lesson proves.
 src/topics/<topic>/FACILITATION.md    The talk track for presenting the topic live.
-scripts/new-lesson.ts                 Scaffold: pnpm run new-lesson <topic> <lesson> "Title".
+scripts/generate.ts                   pnpm run generate: adds a lesson (and its topic) from scripts/templates/.
 vitest.config.ts                      pnpm run test runs two projects: node and browser.
 tsconfig.json                         Astro's strict TypeScript; pnpm run check type-checks .ts and .astro files.
 test/*.test.ts                        Node: catalogue, scaffold and config checks.
@@ -152,15 +152,17 @@ patterns as intended; only de-duplicate inside one file.
 
 ## Adding a topic, step by step
 
-1. `topic-designer` agent: turn the argument into `src/topics/<slug>/TOPIC.md` (question, patterns, glossary, claims
-   table).
-2. `pnpm run new-lesson <slug> <lesson> "Title"` for each lesson in the claims table. The first call also creates
-   the topic, its Start here page, `TOPIC.md` and a placeholder `server.ts` if they do not exist.
+1. Run `pnpm run generate` and answer its questions. The first run for a topic creates the topic, its Start here page,
+   a lesson page that runs a placeholder pattern, a placeholder API, `TOPIC.md` and `FACILITATION.md`.
+2. Use the `topic-designer` agent to write the question, the patterns, a glossary and the claims table in
+   `src/topics/<slug>/TOPIC.md`. Run `pnpm run generate` again for each lesson in the claims table.
 3. Fill in the topic's `title`, `emoji`, `summary` and each lesson's `blurb` in `src/site.json`.
-4. `pattern-builder` agent, once per pattern: the real pattern code and any server code, test first.
+4. Use the `pattern-builder` agent once per pattern, to build its file in `src/topics/<slug>/patterns/` and any server
+   code it calls, for real and test first.
 5. Write each lesson page to the anatomy above. For complete lessons, see https://github.com/greg-m-k/apollo-lnl and https://github.com/greg-m-k/useeffect-lnl.
-6. `lesson-reviewer` agent: review every page as a senior engineer new to the domain. Fix what it finds.
-7. `session-facilitator` agent: write `src/topics/<slug>/FACILITATION.md`.
+6. Use the `lesson-reviewer` agent to review every page as a senior engineer new to the domain. Fix what it finds.
+7. Use the `session-facilitator` agent to write `src/topics/<slug>/FACILITATION.md`, the talk track for presenting
+   the topic live.
 8. `pnpm run test`, and try it in `pnpm run dev`. All green before you push: CI (`.github/workflows/ci.yml`) runs the same
    checks. Open a pull request for review.
 
@@ -202,7 +204,7 @@ pnpm run check                    type-check every .ts and .astro file
 pnpm run test                     syncs Astro's content, then node checks, the site booted by Alchemy's harness, and
                                   page code in Chrome
 pnpm run dev                      the site and APIs at http://localhost:8800
-pnpm run new-lesson <topic> <lesson> "Title"
+pnpm run generate                 add a lesson, and its topic if new (asks, or takes <topic> <lesson> "Title")
 pnpm run login                    connect a Cloudflare account to Alchemy (only needed to deploy)
 pnpm run deploy                   deploy (ask first)
 pnpm run destroy                  remove a deployment (ask first)

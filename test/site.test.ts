@@ -2,7 +2,7 @@
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
-import { addLesson } from '../scripts/new-lesson.ts';
+import { addLesson } from '../scripts/generate.ts';
 import catalogue from '../src/site.json';
 
 const root = new URL('../', import.meta.url);

@@ -1,13 +1,13 @@
 # Contributing
 
-This site hosts small Lunch & Learn examples from anyone, added by pull request. Read `AGENTS.md` first: it says
+This site hosts small Lunch & Learn examples from anyone, added by pull request. Read `AGENTS.md` first. It says
 what a Lunch & Learn here is and how a topic is built.
 
 ## Adding an example
 
 1. Fork the repository, then `pnpm install`. pnpm fetches the Node and pnpm versions set in `package.json`.
-2. `pnpm run new-lesson <topic> start "Start here: the problem and the patterns"` creates the topic and its first
-   lesson, and prints what to fill in next. Run it once per lesson.
+2. `pnpm run generate` asks for a topic, a lesson and a title. It creates the topic with a lesson page that runs, and
+   prints what to fill in next. Run it once per lesson.
 3. Build the topic to `AGENTS.md`, test first.
 4. `pnpm run dev` to try it at http://localhost:8800, then `pnpm run lint`, `pnpm run check` and `pnpm run test`.
 5. Open a pull request. Its template holds the checklist below; a maintainer reviews it and merging publishes it.
